@@ -1,0 +1,113 @@
+# ===========================
+# Python
+# ===========================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv/
+env.bak/
+venv.bak/
+pipenv/
+pip-wheel-metadata/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# ===========================
+# Logs and generated files
+# ===========================
+*.log
+sysmaint.log
+logs/
+*.tmp
+*.temp
+
+# SysMaint quarantine / backups
+quarantine/
+backups/
+/backup/
+/opt/sysmaint/backups/
+
+# Configuration with sensitive data (API keys, etc.)
+config.local.yaml
+config.local.yml
+config.local.json
+*.secret
+.env
+.env.*
+
+# ===========================
+# Binary / compiled files
+# ===========================
+*.exe
+*.dll
+*.so
+*.dylib
+*.bin
+*.obj
+*.o
+*.a
+*.lib
+*.pyc
+*.pyo
+*.pyd
+
+# ===========================
+# Version control / IDE / OS
+# ===========================
+.git/
+.gitignore
+.gitattributes
+.gitmodules
+
+# IDEs and editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# ===========================
+# Misc
+# ===========================
+# Allow local overrides but not secrets
+*.local
+*.private

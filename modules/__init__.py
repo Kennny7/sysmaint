@@ -1,1 +1,39 @@
-"""Functional modules for SysMaint."""
+# sysmaint/modules/__init__.py
+
+from . import (
+    backup,
+    cleaner,
+    disk,
+    drivers,
+    integrity,
+    malware,
+    memory,
+    network,
+    optimizer,
+    report,
+    restore,
+    scheduler,
+    security,
+    services,
+    startup,
+    sysinfo,
+)
+
+__all__ = [
+    "backup",
+    "cleaner",
+    "disk",
+    "drivers",
+    "integrity",
+    "malware",
+    "memory",
+    "network",
+    "optimizer",
+    "report",
+    "restore",
+    "scheduler",
+    "security",
+    "services",
+    "startup",
+    "sysinfo",
+]

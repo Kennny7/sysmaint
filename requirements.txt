@@ -1,6 +1,9 @@
-# Core runtime dependencies for SysMaint
+# SysMaint Core & GUI Dependencies
 
 psutil>=5.9.0          # Cross-platform system monitoring (CPU, memory, disks, services)
 PyYAML>=6.0            # YAML configuration file support
 yara-python>=4.2.0     # YARA pattern matching for malware scanning
 requests>=2.28.0       # HTTP client for VirusTotal API integration
+customtkinter>=6.0.0   # Modern cross-platform graphical user interface
+darkdetect>=0.8.0      # OS color scheme detection
+rich>=13.0.0           # Terminal formatting, progress tables, and styled logging

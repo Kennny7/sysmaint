@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import logging
 import platform
-from typing import Any, Iterable, Optional
+import shutil
+from typing import Any, Iterable, List
 
 import psutil
 
@@ -13,67 +14,86 @@ from ..utils.common import run_command
 logger = logging.getLogger("sysmaint.services")
 
 
-def list_services() -> list[dict[str, Any]]:
+def list_services() -> List[dict[str, Any]]:
     """
-    List all services on the current system.
+    List all installed services across Windows or Linux safely.
 
     Returns:
-        A list of dictionaries with service name and status.
+        A list of dictionaries with service name, display name, status, and description.
     """
     system = platform.system().lower()
-    logger.info("Listing services")
+    logger.info("Enumerating services on %s", system)
+    services: List[dict[str, Any]] = []
 
     if system == "windows":
-        services = []
         for svc in psutil.win_service_iter():
-            services.append(
-                {
-                    "name": svc.name(),
-                    "display_name": svc.display_name(),
-                    "status": svc.status(),
-                }
-            )
-        return services
+            try:
+                name = svc.name()
+                display_name = svc.display_name()
+                status = svc.status()
+                start_type = svc.start_type()
+                services.append({
+                    "name": name,
+                    "display_name": display_name,
+                    "status": status,
+                    "start_type": start_type,
+                    "healthy": status != "stopped" or start_type != "automatic",
+                })
+            except (psutil.AccessDenied, psutil.NoSuchProcess, OSError):
+                continue
+        return sorted(services, key=lambda x: x["name"].lower())
 
     if system == "linux":
-        # systemd is assumed; fallback to service command is possible
-        result = run_command(
-            ["systemctl", "list-units", "--type=service", "--no-pager", "--no-legend"],
-            check=False,
-        )
-        services = []
-        for line in result.stdout.splitlines():
-            parts = line.split(None, 4)
-            if len(parts) >= 5:
-                unit_name = parts[0].replace(".service", "")
-                status = parts[3]  # ACTIVE column
-                description = parts[4]
-                services.append(
-                    {
+        if shutil.which("systemctl"):
+            result = run_command(
+                ["systemctl", "list-units", "--type=service", "--all", "--no-pager", "--no-legend"],
+                check=False,
+            )
+            for line in result.stdout.splitlines():
+                parts = line.strip().split(None, 4)
+                if len(parts) >= 4:
+                    unit_name = parts[0].replace(".service", "")
+                    active_state = parts[2]
+                    sub_state = parts[3]
+                    desc = parts[4] if len(parts) > 4 else ""
+                    is_failed = active_state == "failed"
+                    services.append({
                         "name": unit_name,
-                        "status": status,
-                        "description": description,
-                    }
-                )
-        return services
+                        "display_name": desc or unit_name,
+                        "status": active_state,
+                        "sub_status": sub_state,
+                        "healthy": not is_failed,
+                    })
+        return sorted(services, key=lambda x: x["name"].lower())
 
     return []
 
 
 def service_status(name: str) -> str:
-    """Return the current status of a single service."""
+    """
+    Return the current status of a single service ('running', 'stopped', 'failed', 'not_found').
+    """
     system = platform.system().lower()
     logger.info("Checking service status: %s", name)
 
     if system == "windows":
-        for svc in psutil.win_service_iter():
-            if svc.name().lower() == name.lower():
-                return svc.status()
-        return "not_found"
+        try:
+            svc = psutil.win_service_get(name)
+            return svc.status()
+        except (psutil.NoSuchProcess, Exception):
+            return "not_found"
 
     if system == "linux":
-        result = run_command(["systemctl", "is-active", name], check=False)
-        return result.stdout.strip() if result.stdout else "inactive"
+        if shutil.which("systemctl"):
+            res = run_command(["systemctl", "is-active", name], check=False)
+            status = res.stdout.strip()
+            if status in ("active", "running"):
+                return "running"
+            elif status == "failed":
+                return "failed"
+            elif status in ("inactive", "dead"):
+                return "stopped"
+        return "unknown"
 
     return "unsupported"
 
@@ -83,19 +103,36 @@ def control_service(name: str, action: str) -> dict[str, Any]:
     Start, stop, or restart a system service.
 
     Args:
-        name: Service name.
-        action: One of 'start', 'stop', 'restart'.
+        name: Service identifier name.
+        action: One of 'start', 'stop', 'restart', 'enable', 'disable'.
 
     Returns:
-        Dictionary with command result details.
+        Dictionary with execution result.
     """
     system = platform.system().lower()
-    logger.info("Service action '%s' on '%s'", action, name)
+    logger.info("Performing service action '%s' on '%s'", action, name)
 
     if system == "windows":
-        cmd = ["sc", action, name]
+        if action in ("start", "stop", "restart"):
+            # Use PowerShell Start-Service / Stop-Service / Restart-Service for synchronous reliability
+            ps_map = {
+                "start": f"Start-Service -Name '{name}'",
+                "stop": f"Stop-Service -Name '{name}' -Force",
+                "restart": f"Restart-Service -Name '{name}' -Force",
+            }
+            script = ps_map.get(action, f"sc {action} '{name}'")
+            cmd = ["powershell", "-NoProfile", "-Command", script]
+        elif action in ("enable", "disable"):
+            startup_type = "Automatic" if action == "enable" else "Disabled"
+            cmd = ["powershell", "-NoProfile", "-Command", f"Set-Service -Name '{name}' -StartupType {startup_type}"]
+        else:
+            return {"error": f"Invalid action: {action}"}
+
     elif system == "linux":
-        cmd = ["systemctl", action, name]
+        if action in ("start", "stop", "restart", "enable", "disable"):
+            cmd = ["systemctl", action, name]
+        else:
+            return {"error": f"Invalid action: {action}"}
     else:
         return {"error": f"Unsupported platform: {system}"}
 
@@ -103,31 +140,27 @@ def control_service(name: str, action: str) -> dict[str, Any]:
     return {
         "name": name,
         "action": action,
+        "success": result.returncode == 0,
         "returncode": result.returncode,
-        "output": result.stdout,
-        "stderr": result.stderr,
+        "output": result.stdout.strip(),
+        "stderr": result.stderr.strip(),
     }
 
 
 def ensure_expected_services(expected_services: Iterable[str]) -> dict[str, Any]:
     """
-    Ensure that a list of expected services is running.
-
-    If a service is inactive, attempt to start it.
-
-    Returns:
-        Dictionary with lists of started, already_running, and failed services.
+    Ensure that a list of critical services is active, starting any that are stopped.
     """
-    result = {"started": [], "already_running": [], "failed": []}
-    logger.info("Ensuring expected services are running")
+    result: dict[str, list[str]] = {"started": [], "already_running": [], "failed": []}
+    logger.info("Verifying expected services are running")
 
     for svc_name in expected_services:
         status = service_status(svc_name)
         if status in ("active", "running"):
             result["already_running"].append(svc_name)
         elif status in ("inactive", "failed", "stopped"):
-            control_result = control_service(svc_name, "start")
-            if control_result.get("returncode") == 0:
+            res = control_service(svc_name, "start")
+            if res.get("success"):
                 result["started"].append(svc_name)
             else:
                 result["failed"].append(svc_name)

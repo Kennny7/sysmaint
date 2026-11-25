@@ -31,7 +31,6 @@ from textual.widgets import (
 from .. import __brand__, __codename__, __version__
 from ..config import SysMaintConfig, load_config
 from ..modules import (
-    ai_assistant,
     disk,
     integrity,
     malware,
@@ -167,22 +166,6 @@ class SysMaintTUI(App):
                             yield Button("Scan Temp Auto-Recovery", id="btn-temp-rec", variant="success")
                     yield RichLog(id="log-recovery", wrap=True, highlight=True)
 
-            with TabPane("AI Guard (Ollama)", id="tab-ai"):
-                with VerticalScroll():
-                    with Vertical(classes="card"):
-                        yield Label(
-                            f"Optional Local AI Guard ({ai_assistant.RECOMMENDED_MODEL})",
-                            classes="card-title",
-                        )
-                        yield Input(
-                            placeholder="Describe your OS issue (e.g., 'Windows Update stuck and high disk usage')...",
-                            id="input-ai-problem",
-                        )
-                        with Horizontal(classes="action-row"):
-                            yield Button("Check Ollama / Docker Readiness", id="btn-ai-check", variant="primary")
-                            yield Button("Analyze & Suggest Fix", id="btn-ai-ask", variant="success")
-                    yield RichLog(id="log-ai", wrap=True, highlight=True)
-
             with TabPane("Microservice", id="tab-service"):
                 with VerticalScroll():
                     with Vertical(classes="card"):
@@ -252,11 +235,6 @@ class SysMaintTUI(App):
             self._run_shadows()
         elif bid == "btn-temp-rec":
             self._run_temp_rec()
-        elif bid == "btn-ai-check":
-            self._run_ai_check()
-        elif bid == "btn-ai-ask":
-            problem = self.query_one("#input-ai-problem", Input).value
-            self._run_ai_ask(problem)
         elif bid == "btn-svc-health":
             url = self.query_one("#input-server-url", Input).value.strip().rstrip("/")
             self._run_svc_get(url, "/health")
@@ -324,24 +302,6 @@ class SysMaintTUI(App):
     def _run_temp_rec(self) -> None:
         res = recovery.scan_recoverable_temp_files(limit=30)
         self.call_from_thread(self._write_result, "log-recovery", "Temp Auto-Recovery Files", res)
-
-    @work(thread=True)
-    def _run_ai_check(self) -> None:
-        res = ai_assistant.check_ollama_environment(
-            endpoint=self.cfg.ai.endpoint,
-            model=self.cfg.ai.model,
-        )
-        self.call_from_thread(self._write_result, "log-ai", "Ollama / Docker Readiness", res)
-
-    @work(thread=True)
-    def _run_ai_ask(self, problem: str) -> None:
-        res = ai_assistant.analyze_problem(
-            problem_description=problem,
-            endpoint=self.cfg.ai.endpoint,
-            model=self.cfg.ai.model,
-            execute=False,
-        )
-        self.call_from_thread(self._write_result, "log-ai", "AI Guard Analysis", res)
 
     @work(thread=True)
     def _run_svc_get(self, base_url: str, path: str) -> None:

@@ -5,15 +5,19 @@ from __future__ import annotations
 import logging
 import platform
 import shutil
-from typing import Any
+from typing import Any, Callable, Optional
 
-from ..utils.common import run_command
+from ..utils.common import run_command, stream_command
 from ..utils.parsers import parse_dism_output, parse_sfc_output
 
 logger = logging.getLogger("sysmaint.integrity")
 
 
-def check_integrity(repair: bool = False, offline_source: str | None = None) -> dict[str, Any]:
+def check_integrity(
+    repair: bool = False,
+    offline_source: str | None = None,
+    progress_cb: Optional[Callable[[str, Optional[float]], None]] = None,
+) -> dict[str, Any]:
     """
     Verify system file and package integrity.
 
@@ -41,7 +45,11 @@ def check_integrity(repair: bool = False, offline_source: str | None = None) -> 
         else:
             dism_cmd = ["Dism.exe", "/Online", "/Cleanup-Image", "/ScanHealth"]
 
-        dism_result = run_command(dism_cmd, check=False)
+        if progress_cb:
+            progress_cb("Starting Windows DISM health check...", None)
+            dism_result = stream_command(dism_cmd, on_line=progress_cb)
+        else:
+            dism_result = run_command(dism_cmd, check=False)
         parsed_dism = parse_dism_output(dism_result.stdout)
         results["dism"] = {
             "returncode": dism_result.returncode,
@@ -56,7 +64,11 @@ def check_integrity(repair: bool = False, offline_source: str | None = None) -> 
         else:
             sfc_cmd = ["sfc", "/verifyonly"]
 
-        sfc_result = run_command(sfc_cmd, check=False)
+        if progress_cb:
+            progress_cb("Starting Windows System File Checker (SFC)...", None)
+            sfc_result = stream_command(sfc_cmd, on_line=progress_cb)
+        else:
+            sfc_result = run_command(sfc_cmd, check=False)
         parsed_sfc = parse_sfc_output(sfc_result.stdout)
         results["sfc"] = {
             "returncode": sfc_result.returncode,

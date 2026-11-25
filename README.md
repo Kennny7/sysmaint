@@ -6,12 +6,12 @@
 
 **Cross-Platform System Maintenance, Security & Data Recovery Microservice**
 
-*Version 3.0.0 — Sentinel Microservice | Built by Kennny7 Microservices*
+*Version 1.0.0 — Sentinel Microservice | Built by Kennny7 Microservices*
 
 <br />
 
 <a href="USER_GUIDE.md"><img src="https://img.shields.io/badge/Read_the-User_Guide-06b6d4?style=for-the-badge" alt="Read the User Guide" /></a>
-<a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Release-v3.0.0_Sentinel-0f172a?style=for-the-badge" alt="Release v3.0.0" /></a>
+<a href="CHANGELOG.md"><img src="https://img.shields.io/badge/Release-v1.0.0_Sentinel-0f172a?style=for-the-badge" alt="Release v1.0.0" /></a>
 
 <br /><br />
 
@@ -33,7 +33,7 @@
 
 ## Architecture Overview
 
-SysMaint v3.0.0 (`Sentinel Microservice`) evolves the original maintenance toolkit into a modular **microservice + terminal client UI** architecture that works both **offline** and **online**.
+SysMaint v1.0.0 (`Sentinel Microservice`) evolves the original maintenance toolkit into a modular **microservice + terminal client UI** architecture that works both **offline** and **online**.
 
 ```mermaid
 flowchart LR
@@ -92,7 +92,14 @@ flowchart TD
 
 ---
 
-## Quick Start (with `uv`)
+## Quick Start
+
+### Clickable Installers & Package Managers (No Manual PATH Setup)
+
+- **Windows**: Run `SysMaint-Setup-v3.0.0.exe` (creates Desktop/Start Menu shortcuts and configures `PATH` automatically) or install via `winget install Kennny7.SysMaint`.
+- **Linux**: Run `./packaging/linux/install.sh` to install `sysmaint`, update `PATH`, and register the clickable **SysMaint** Application Menu launcher (`sysmaint.desktop`).
+
+### From Source (with `uv`)
 
 ```bash
 git clone https://github.com/Kennny7/sysmaint.git
@@ -194,7 +201,7 @@ sysmaint/
 ├── assets/
 │   └── sysmaint-icon.png
 ├── src/sysmaint/
-│   ├── __init__.py            # Version (3.0.0), Codename, Kennny7 Microservices brand
+│   ├── __init__.py            # Version (1.0.0), Codename, Kennny7 Microservices brand
 │   ├── __main__.py
 │   ├── cli.py                 # Unified CLI entrypoint
 │   ├── config.py              # YAML/JSON configuration dataclasses
@@ -244,7 +251,7 @@ uv run ruff check src tests
 
 <div align="center">
 
-**SysMaint v3.0.0 (Sentinel Microservice)** — **Kennny7 Microservices**
+**SysMaint v1.0.0 (Sentinel Microservice)** — **Kennny7 Microservices**
 
 [User Guide](USER_GUIDE.md) | [Changelog](CHANGELOG.md) | [Issues](https://github.com/Kennny7/sysmaint/issues)
 

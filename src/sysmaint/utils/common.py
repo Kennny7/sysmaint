@@ -5,9 +5,10 @@ from __future__ import annotations
 import hashlib
 import logging
 import os
+import re
 import subprocess
 from pathlib import Path
-from typing import Iterable, Optional, Union
+from typing import Callable, Iterable, Optional, Union
 
 logger = logging.getLogger("sysmaint.utils")
 
@@ -93,6 +94,84 @@ def run_command(
             result.stderr.strip() if result.stderr else "",
         )
     return result
+
+
+_PERCENT_RE = re.compile(r"(\d{1,3}(?:\.\d+)?)\s*(?:%|percent)", re.IGNORECASE)
+
+
+def extract_progress_percent(line: str) -> Optional[float]:
+    """Extract a real percentage (0-100) from command output lines (DISM, SFC, chkdsk)."""
+    match = _PERCENT_RE.search(line)
+    if not match:
+        return None
+    val = float(match.group(1))
+    if 0.0 <= val <= 100.0:
+        return val
+    return None
+
+
+def stream_command(
+    command: Iterable[str],
+    *,
+    on_line: Optional[Callable[[str, Optional[float]], None]] = None,
+    cwd: Optional[Union[str, Path]] = None,
+) -> subprocess.CompletedProcess[str]:
+    """
+    Execute a command while streaming live output lines and parsed percentages.
+    Handles both '\\n' and '\\r' updates used by tools like DISM and SFC.
+    """
+    cmd_list = [command] if isinstance(command, str) else list(command)
+    captured: list[str] = []
+
+    try:
+        proc = subprocess.Popen(
+            cmd_list,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            cwd=cwd,
+            encoding="utf-8",
+            errors="replace",
+            bufsize=1,
+        )
+    except FileNotFoundError:
+        msg = f"Executable not found: {cmd_list[0] if cmd_list else ''}"
+        if on_line:
+            on_line(msg, None)
+        return subprocess.CompletedProcess(args=cmd_list, returncode=127, stdout="", stderr=msg)
+    except Exception as exc:
+        if on_line:
+            on_line(str(exc), None)
+        return subprocess.CompletedProcess(args=cmd_list, returncode=-1, stdout="", stderr=str(exc))
+
+    assert proc.stdout is not None
+    buf = ""
+    while True:
+        ch = proc.stdout.read(1)
+        if not ch:
+            if buf.strip():
+                line = buf.strip()
+                captured.append(line)
+                if on_line:
+                    on_line(line, extract_progress_percent(line))
+            break
+        if ch in ("\r", "\n"):
+            line = buf.strip()
+            buf = ""
+            if line:
+                captured.append(line)
+                if on_line:
+                    on_line(line, extract_progress_percent(line))
+        else:
+            buf += ch
+
+    rc = proc.wait()
+    return subprocess.CompletedProcess(
+        args=cmd_list,
+        returncode=rc,
+        stdout="\n".join(captured),
+        stderr="",
+    )
 
 
 def format_bytes(num_bytes: Union[int, float]) -> str:

@@ -13,7 +13,6 @@ from pydantic import BaseModel, Field
 from .. import __brand__, __codename__, __version__
 from ..config import SysMaintConfig, load_config
 from ..modules import (
-    ai_assistant,
     disk,
     drivers,
     integrity,
@@ -68,21 +67,13 @@ class CarveRequest(BaseModel):
     dry_run: bool = True
 
 
-class AIAssistRequest(BaseModel):
-    problem: str
-    model: str = ai_assistant.RECOMMENDED_MODEL
-    endpoint: str = ai_assistant.DEFAULT_ENDPOINT
-    execute: bool = False
-    auto_confirm: bool = False
-
-
 def create_app(config: Optional[SysMaintConfig] = None) -> FastAPI:
     """Create the SysMaint Sentinel FastAPI microservice."""
     cfg = config or load_config()
     app = FastAPI(
         title="SysMaint Sentinel Microservice",
         description=(
-            f"Cross-Platform System Maintenance, Security, Data Recovery & AI Guard API "
+            f"Cross-Platform System Maintenance, Security & Data Recovery API "
             f"by {__brand__}."
         ),
         version=__version__,
@@ -206,23 +197,6 @@ def create_app(config: Optional[SysMaintConfig] = None) -> FastAPI:
             file_types=req.file_types,
             max_files=req.max_files,
             dry_run=req.dry_run,
-        )
-
-    @app.get("/v1/ai/status")
-    def api_ai_status(
-        endpoint: str = ai_assistant.DEFAULT_ENDPOINT,
-        model: str = ai_assistant.RECOMMENDED_MODEL,
-    ) -> dict[str, Any]:
-        return ai_assistant.check_ollama_environment(endpoint=endpoint, model=model)
-
-    @app.post("/v1/ai/assist")
-    def api_ai_assist(req: AIAssistRequest) -> dict[str, Any]:
-        return ai_assistant.analyze_problem(
-            problem_description=req.problem,
-            endpoint=req.endpoint,
-            model=req.model,
-            execute=req.execute,
-            auto_confirm=req.auto_confirm,
         )
 
     return app

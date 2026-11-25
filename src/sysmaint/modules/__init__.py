@@ -1,0 +1,43 @@
+# sysmaint/modules/__init__.py
+
+from . import (
+    ai_assistant,
+    backup,
+    cleaner,
+    disk,
+    drivers,
+    integrity,
+    malware,
+    memory,
+    network,
+    optimizer,
+    recovery,
+    report,
+    restore,
+    scheduler,
+    security,
+    services,
+    startup,
+    sysinfo,
+)
+
+__all__ = [
+    "ai_assistant",
+    "backup",
+    "cleaner",
+    "disk",
+    "drivers",
+    "integrity",
+    "malware",
+    "memory",
+    "network",
+    "optimizer",
+    "recovery",
+    "report",
+    "restore",
+    "scheduler",
+    "security",
+    "services",
+    "startup",
+    "sysinfo",
+]

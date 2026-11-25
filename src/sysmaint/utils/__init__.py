@@ -2,10 +2,12 @@
 
 from .common import (
     compute_sha256,
+    extract_progress_percent,
     format_bytes,
     run_command,
     safe_delete_dir_contents,
     safe_delete_file,
+    stream_command,
 )
 from .escalate import ensure_elevated, is_elevated, request_elevation
 from .parsers import (

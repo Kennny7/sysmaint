@@ -1,7 +1,6 @@
 # sysmaint/modules/__init__.py
 
 from . import (
-    ai_assistant,
     backup,
     cleaner,
     disk,
@@ -22,7 +21,6 @@ from . import (
 )
 
 __all__ = [
-    "ai_assistant",
     "backup",
     "cleaner",
     "disk",

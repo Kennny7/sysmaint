@@ -11,10 +11,10 @@ from rich.table import Table
 from textual import work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical, VerticalScroll
-from textual.theme import Theme
+from textual.containers import Horizontal, Vertical
 from textual.widgets import (
     Button,
+    ContentSwitcher,
     Footer,
     Header,
     Input,
@@ -22,8 +22,8 @@ from textual.widgets import (
     LoadingIndicator,
     ProgressBar,
     Static,
-    TabbedContent,
-    TabPane,
+    Tab,
+    Tabs,
 )
 
 from .. import __brand__, __codename__, __version__
@@ -40,21 +40,7 @@ from ..modules import (
 )
 from ..utils.escalate import is_elevated, request_elevation
 from .modals import ConfirmLongTaskModal, ElevationModal, TechnicalLogModal
-
-CATPPUCCIN_MOCHA = Theme(
-    name="catppuccin-mocha",
-    primary="#89b4fa",
-    secondary="#74c7ec",
-    accent="#94e2d5",
-    foreground="#cdd6f4",
-    background="#1e1e2e",
-    surface="#181825",
-    panel="#313244",
-    success="#a6e3a1",
-    warning="#f9e2af",
-    error="#f38ba8",
-    dark=True,
-)
+from .themes import CUSTOM_THEMES, THEME_CYCLE
 
 
 class SysMaintTUI(App):
@@ -72,6 +58,137 @@ class SysMaintTUI(App):
     #workspace-pane {
         height: 1fr;
         padding: 0 1;
+    }
+
+    #nav-tabs {
+        width: 100%;
+        height: 3;
+        background: $surface;
+        border-bottom: solid $primary;
+    }
+
+    #nav-tabs Tab {
+        width: 1fr;
+        height: 3;
+        padding: 1 1;
+        content-align: center middle;
+        text-style: bold;
+        color: $text-muted;
+    }
+
+    #nav-tabs Tab.-active {
+        color: $primary;
+        background: $panel;
+        text-style: bold;
+    }
+
+    .telemetry-grid {
+        layout: grid;
+        grid-size: 3;
+        grid-gutter: 1;
+        height: 5;
+        margin: 1 0 0 0;
+    }
+
+    .metric-card {
+        background: $panel;
+        border: round $primary;
+        padding: 0 1;
+        height: 5;
+    }
+
+    #device-strip {
+        background: $panel;
+        border: round $secondary;
+        padding: 0 2;
+        height: 3;
+        margin: 0;
+        content-align: left middle;
+    }
+
+    #sysinfo-summary {
+        height: 1;
+    }
+
+    #page-switcher {
+        height: 1fr;
+        margin-top: 1;
+    }
+
+    .tab-body {
+        height: 1fr;
+    }
+
+    .card {
+        background: $panel;
+        border: round $secondary;
+        padding: 1 2;
+        margin: 0 0 1 0;
+        height: auto;
+    }
+
+    .card-title {
+        color: $primary;
+        text-style: bold;
+        margin-bottom: 0;
+    }
+
+    .action-item {
+        height: auto;
+        margin: 1 0 0 0;
+    }
+
+    /* Radiant outline buttons on dark background (default for obsidian-gold & dark themes) */
+    Button {
+        background: $surface;
+        color: $primary;
+        border: round $primary;
+        text-style: bold;
+    }
+
+    Button:hover, Button:focus {
+        background: $panel;
+        color: $accent;
+        border: heavy $accent;
+    }
+
+    /* Solid dark-yellow / golden buttons for amber-slate theme */
+    Screen.solid-gold-buttons Button {
+        background: #a16207;
+        color: #fefce8;
+        border: round #eab308;
+    }
+
+    Screen.solid-gold-buttons Button:hover,
+    Screen.solid-gold-buttons Button:focus {
+        background: #ca8a04;
+        color: #090b10;
+        border: heavy #fde047;
+    }
+
+    .action-item Button {
+        width: 1fr;
+        margin-right: 1;
+    }
+
+    .action-desc {
+        color: $text-muted;
+        padding-left: 1;
+        margin-top: 1;
+    }
+
+    .result-box {
+        background: $surface;
+        border: round $accent;
+        padding: 1 2;
+        margin: 0 0 1 0;
+        height: 1fr;
+        overflow-y: auto;
+    }
+
+    Footer {
+        height: 3;
+        padding: 1 2;
     }
 
     #activity-bar {
@@ -138,18 +255,18 @@ class SysMaintTUI(App):
     }
 
     ProgressBar > Bar > .bar--bar {
-        color: $accent;
-        background: #3b4261;
+        color: $primary;
+        background: #334155;
     }
 
     ProgressBar > Bar > .bar--complete {
         color: $success;
-        background: #3b4261;
+        background: #334155;
     }
 
     ProgressBar > Bar > .bar--indeterminate {
-        color: $primary;
-        background: #3b4261;
+        color: $accent;
+        background: #334155;
     }
 
     #activity-live-line {
@@ -157,60 +274,8 @@ class SysMaintTUI(App):
         margin-top: 0;
     }
 
-    .telemetry-grid {
-        layout: grid;
-        grid-size: 3;
-        grid-gutter: 1;
-        height: auto;
-        margin: 0;
-    }
-
-    .metric-card {
-        background: $panel;
-        border: round $primary;
-        padding: 0 1;
-        height: auto;
-    }
-
-    .card {
-        background: $panel;
-        border: round $secondary;
-        padding: 0 1;
-        margin: 0;
-        height: auto;
-    }
-
-    .card-title {
-        color: $primary;
-        text-style: bold;
-        margin-bottom: 0;
-    }
-
-    .action-item {
-        height: auto;
-        margin: 0;
-    }
-
-    .action-desc {
-        color: $text-muted;
-        padding-left: 1;
-    }
-
-    .result-box {
-        background: $surface;
-        border: round $accent;
-        padding: 0 1;
-        margin: 0;
-        height: auto;
-        min-height: 3;
-    }
-
-    Button {
-        margin-right: 1;
-    }
-
     Input {
-        margin: 1 0;
+        margin: 1 0 0 0;
     }
     """
 
@@ -235,124 +300,161 @@ class SysMaintTUI(App):
     def compose(self) -> ComposeResult:
         yield Header(show_clock=True)
         with Vertical(id="workspace-pane"):
-            with TabbedContent(initial="tab-overview"):
-                with TabPane("Overview", id="tab-overview"):
-                    with VerticalScroll():
-                        with Horizontal(classes="telemetry-grid"):
-                            with Vertical(classes="metric-card"):
-                                yield Label("Processor (CPU)", classes="card-title")
-                                yield ProgressBar(total=100, show_eta=False, id="bar-cpu")
-                                yield Static("0.0%", id="val-cpu")
-                            with Vertical(classes="metric-card"):
-                                yield Label("Memory (RAM)", classes="card-title")
-                                yield ProgressBar(total=100, show_eta=False, id="bar-ram")
-                                yield Static("0.0%", id="val-ram")
-                            with Vertical(classes="metric-card"):
-                                yield Label("Main Storage", classes="card-title")
-                                yield ProgressBar(total=100, show_eta=False, id="bar-disk")
-                                yield Static("0.0%", id="val-disk")
+            yield Tabs(
+                Tab("Overview", id="tab-overview"),
+                Tab("System Repair", id="tab-repair"),
+                Tab("Security & Malware", id="tab-security"),
+                Tab("Data Recovery", id="tab-recovery"),
+                Tab("Background Service", id="tab-service"),
+                id="nav-tabs",
+            )
 
-                        with Vertical(classes="card"):
-                            yield Label(
-                                f"Device Summary  |  Engine: {self.server_url or 'Local Standalone'}",
-                                classes="card-title",
-                            )
-                            yield Static("", id="sysinfo-summary")
+            with Horizontal(classes="telemetry-grid"):
+                with Vertical(classes="metric-card"):
+                    yield Label("Processor (CPU)", classes="card-title")
+                    yield ProgressBar(total=100, show_eta=False, id="bar-cpu")
+                    yield Static("0.0%", id="val-cpu")
+                with Vertical(classes="metric-card"):
+                    yield Label("Memory (RAM)", classes="card-title")
+                    yield ProgressBar(total=100, show_eta=False, id="bar-ram")
+                    yield Static("0.0%", id="val-ram")
+                with Vertical(classes="metric-card"):
+                    yield Label("Main Storage", classes="card-title")
+                    yield ProgressBar(total=100, show_eta=False, id="bar-disk")
+                    yield Static("0.0%", id="val-disk")
 
-                        with Vertical(classes="card"):
-                            yield Label("Quick Actions", classes="card-title")
-                            with Horizontal(classes="action-item"):
-                                yield Button("Quick Scan", id="btn-quick-scan", variant="success")
-                                yield Button("Refresh Stats", id="btn-refresh", variant="primary")
-                                yield Button("View Technical Log (L)", id="btn-open-log", variant="default")
-                            yield Label(
-                                "Note: Quick Scan safely checks storage, memory, and system health without changing files.",
-                                classes="action-desc",
-                            )
+            with Vertical(id="device-strip"):
+                yield Static("", id="sysinfo-summary")
 
-                        yield Static("Press Quick Scan to see a plain-English health summary.", id="res-overview", classes="result-box")
+            with ContentSwitcher(initial="tab-overview", id="page-switcher"):
+                with Vertical(id="tab-overview", classes="tab-body"):
+                    with Vertical(classes="card"):
+                        yield Label("Quick Actions", classes="card-title")
+                        with Horizontal(classes="action-item"):
+                            yield Button("Quick Scan", id="btn-quick-scan")
+                            yield Button("Refresh Stats", id="btn-refresh")
+                            yield Button("View Technical Log (L)", id="btn-open-log")
+                        yield Label(
+                            "Note: Quick Scan safely checks storage, memory, and system health without changing files.",
+                            classes="action-desc",
+                        )
+                    yield Static(
+                        "Press Quick Scan to see a plain-English health summary.",
+                        id="res-overview",
+                        classes="result-box",
+                    )
 
-                with TabPane("System Repair", id="tab-repair"):
-                    with VerticalScroll():
-                        with Vertical(classes="card"):
-                            yield Label("Health Checks & Repair Tools", classes="card-title")
-                            with Horizontal(classes="action-item"):
-                                yield Button("Check System Files", id="btn-integrity", variant="primary")
-                                yield Button("Fix System Files", id="btn-integrity-fix", variant="error")
-                                yield Button("Preview System Fixes", id="btn-repair-dry", variant="warning")
-                                yield Button("Test & Fix Network", id="btn-net-check", variant="default")
-                            yield Label(
-                                "Note: 'Check/Fix System Files' uses Windows DISM & SFC (or Linux package verify) and requires Administrator/root privileges.",
-                                classes="action-desc",
-                            )
-                        yield Static("Select a check or repair above to inspect your system.", id="res-repair", classes="result-box")
+                with Vertical(id="tab-repair", classes="tab-body"):
+                    with Vertical(classes="card"):
+                        yield Label("Health Checks & Repair Tools", classes="card-title")
+                        with Horizontal(classes="action-item"):
+                            yield Button("Check System Files", id="btn-integrity")
+                            yield Button("Fix System Files", id="btn-integrity-fix")
+                            yield Button("Preview System Fixes", id="btn-repair-dry")
+                            yield Button("Test & Fix Network", id="btn-net-check")
+                        yield Label(
+                            "Note: 'Check/Fix System Files' uses Windows DISM & SFC (or Linux package verify) and requires Administrator/root privileges.",
+                            classes="action-desc",
+                        )
+                    yield Static(
+                        "Select a check or repair above to inspect your system.",
+                        id="res-repair",
+                        classes="result-box",
+                    )
 
-                with TabPane("Security & Malware", id="tab-security"):
-                    with VerticalScroll():
-                        with Vertical(classes="card"):
-                            yield Label("Protection Audit & Threat Scanner", classes="card-title")
-                            with Horizontal(classes="action-item"):
-                                yield Button("Check System Protection", id="btn-sec-audit", variant="primary")
-                                yield Button("Scan for Viruses & Malware", id="btn-malware-scan", variant="success")
-                            yield Label(
-                                "Note: Scans Downloads, Temp, and Startup folders offline using built-in YARA rules and ClamAV (if installed).",
-                                classes="action-desc",
-                            )
-                        yield Static("Run a protection check or malware scan to see results here.", id="res-security", classes="result-box")
+                with Vertical(id="tab-security", classes="tab-body"):
+                    with Vertical(classes="card"):
+                        yield Label("Protection Audit & Threat Scanner", classes="card-title")
+                        with Horizontal(classes="action-item"):
+                            yield Button("Check System Protection", id="btn-sec-audit")
+                            yield Button("Scan for Viruses & Malware", id="btn-malware-scan")
+                        yield Label(
+                            "Note: Scans Downloads, Temp, and Startup folders offline using built-in YARA rules and ClamAV (if installed).",
+                            classes="action-desc",
+                        )
+                    yield Static(
+                        "Run a protection check or malware scan to see results here.",
+                        id="res-security",
+                        classes="result-box",
+                    )
 
-                with TabPane("Data Recovery", id="tab-recovery"):
-                    with VerticalScroll():
-                        with Vertical(classes="card"):
-                            yield Label("Recover Deleted & Unsaved Files", classes="card-title")
-                            with Horizontal(classes="action-item"):
-                                yield Button("View Deleted Files", id="btn-trash-list", variant="primary")
-                                yield Button("Find Unsaved Documents", id="btn-temp-rec", variant="success")
-                                yield Button("View Restore Snapshots", id="btn-shadows", variant="default")
-                            yield Label(
-                                "Note: Inspects your Recycle Bin / Trash, Office & LibreOffice auto-recovery drafts, and OS restore snapshots.",
-                                classes="action-desc",
-                            )
-                        yield Static("Choose a recovery option above to search for lost files.", id="res-recovery", classes="result-box")
+                with Vertical(id="tab-recovery", classes="tab-body"):
+                    with Vertical(classes="card"):
+                        yield Label("Recover Deleted & Unsaved Files", classes="card-title")
+                        with Horizontal(classes="action-item"):
+                            yield Button("View Deleted Files", id="btn-trash-list")
+                            yield Button("Find Unsaved Documents", id="btn-temp-rec")
+                            yield Button("View Restore Snapshots", id="btn-shadows")
+                        yield Label(
+                            "Note: Inspects your Recycle Bin / Trash, Office & LibreOffice auto-recovery drafts, and OS restore snapshots.",
+                            classes="action-desc",
+                        )
+                    yield Static(
+                        "Choose a recovery option above to search for lost files.",
+                        id="res-recovery",
+                        classes="result-box",
+                    )
 
-                with TabPane("Background Service", id="tab-service"):
-                    with VerticalScroll():
-                        with Vertical(classes="card"):
-                            yield Label("Microservice Connection", classes="card-title")
-                            yield Input(
-                                value=self.server_url or "http://127.0.0.1:8765",
-                                placeholder="http://127.0.0.1:8765",
-                                id="input-server-url",
-                            )
-                            with Horizontal(classes="action-item"):
-                                yield Button("Check Service Health", id="btn-svc-health", variant="primary")
-                                yield Button("Fetch System Profile", id="btn-svc-sysinfo", variant="default")
-                            yield Label(
-                                "Note: Start the background service anytime by running 'sysmaint serve' in a terminal.",
-                                classes="action-desc",
-                            )
-                        yield Static("Check whether the local SysMaint microservice is running.", id="res-service", classes="result-box")
+                with Vertical(id="tab-service", classes="tab-body"):
+                    with Vertical(classes="card"):
+                        yield Label("Microservice Connection", classes="card-title")
+                        yield Input(
+                            value=self.server_url or "http://127.0.0.1:8765",
+                            placeholder="http://127.0.0.1:8765",
+                            id="input-server-url",
+                        )
+                        with Horizontal(classes="action-item"):
+                            yield Button("Check Service Health", id="btn-svc-health")
+                            yield Button("Fetch System Profile", id="btn-svc-sysinfo")
+                        yield Label(
+                            "Note: Start the background service anytime by running 'sysmaint serve' in a terminal.",
+                            classes="action-desc",
+                        )
+                    yield Static(
+                        "Check whether the local SysMaint microservice is running.",
+                        id="res-service",
+                        classes="result-box",
+                    )
 
-        with Vertical(id="activity-bar"):
-            with Horizontal(id="activity-top-row"):
-                yield LoadingIndicator(id="activity-spinner")
-                yield Static("Ready.", id="activity-status")
-                yield Static("", id="activity-percent")
-            yield ProgressBar(total=100, show_eta=False, id="activity-progress")
-            yield Static("", id="activity-live-line")
+            with Vertical(id="activity-bar"):
+                with Horizontal(id="activity-top-row"):
+                    yield LoadingIndicator(id="activity-spinner")
+                    yield Static("Ready.", id="activity-status")
+                    yield Static("", id="activity-percent")
+                yield ProgressBar(total=100, show_eta=False, id="activity-progress")
+                yield Static("", id="activity-live-line")
 
-        yield Footer()
+            yield Footer()
 
     def on_mount(self) -> None:
-        self.register_theme(CATPPUCCIN_MOCHA)
-        self.theme = "tokyo-night"
+        for theme_obj in CUSTOM_THEMES:
+            self.register_theme(theme_obj)
+        self._apply_theme("obsidian-gold")
         self.action_refresh_metrics()
         self.set_interval(5.0, self.action_refresh_metrics)
+
+    def _apply_theme(self, theme_name: str) -> None:
+        self.theme = theme_name
+        if theme_name == "amber-slate":
+            self.screen.add_class("solid-gold-buttons")
+        else:
+            self.screen.remove_class("solid-gold-buttons")
+
+    def on_tabs_tab_activated(self, event: Tabs.TabActivated) -> None:
+        if event.tab and event.tab.id:
+            self.query_one("#page-switcher", ContentSwitcher).current = event.tab.id
 
     def action_open_log(self) -> None:
         self.push_screen(TechnicalLogModal(self._log_entries))
 
     def action_toggle_theme(self) -> None:
-        self.theme = "catppuccin-mocha" if self.theme == "tokyo-night" else "tokyo-night"
+        try:
+            idx = THEME_CYCLE.index(self.theme)
+            next_theme = THEME_CYCLE[(idx + 1) % len(THEME_CYCLE)]
+        except ValueError:
+            next_theme = THEME_CYCLE[0]
+        self._apply_theme(next_theme)
+        self.notify(f"Theme switched to: {next_theme}", title="Theme")
 
     def _set_busy(self, busy: bool, message: str, live_line: str = "") -> None:
         self._busy = busy
@@ -397,6 +499,7 @@ class SysMaintTUI(App):
             dsk = 0.0
 
         priv = "Administrator / Root" if is_elevated() else "Standard User"
+        engine = self.server_url or "Local Standalone"
         self.query_one("#bar-cpu", ProgressBar).update(progress=cpu)
         self.query_one("#bar-ram", ProgressBar).update(progress=ram)
         self.query_one("#bar-disk", ProgressBar).update(progress=dsk)
@@ -404,7 +507,8 @@ class SysMaintTUI(App):
         self.query_one("#val-ram", Static).update(f"{ram:.1f}% used")
         self.query_one("#val-disk", Static).update(f"{dsk:.1f}% used")
         self.query_one("#sysinfo-summary", Static).update(
-            f"Computer: {platform.node()}   |   OS: {platform.system()} {platform.release()}   |   Privileges: {priv}"
+            f"Device: {platform.node()}   |   OS: {platform.system()} {platform.release()}   |   "
+            f"Privileges: {priv}   |   Engine: {engine}"
         )
 
     def _finish_task(self, target_id: str, title: str, summary_renderable: Any, raw_data: Any) -> None:
@@ -480,7 +584,7 @@ class SysMaintTUI(App):
         if bid == "btn-refresh":
             self.action_refresh_metrics()
             if not self._busy:
-                self.query_one("#activity-status", Static).update("Live telemetry refreshed.")
+                self.notify("Live telemetry refreshed.", title="Refreshed")
         elif bid == "btn-open-log":
             self.action_open_log()
         elif bid == "btn-quick-scan":

@@ -4,7 +4,7 @@
 
 # SysMaint
 
-**Cross-Platform System Maintenance, Security, Data Recovery & AI Guard Microservice**
+**Cross-Platform System Maintenance, Security & Data Recovery Microservice**
 
 *Version 3.0.0 — Sentinel Microservice | Built by Kennny7 Microservices*
 
@@ -27,7 +27,7 @@
 ---
 
 > [!NOTE]
-> **New to command-line tools?** Open the step-by-step **[User Guide](USER_GUIDE.md)** for plain-English instructions, Ollama/Docker health checks, and ready-to-paste examples.
+> **New to command-line tools?** Open the step-by-step **[User Guide](USER_GUIDE.md)** for plain-English instructions, microservice health checks, and ready-to-paste examples.
 
 ---
 
@@ -53,7 +53,6 @@ flowchart LR
         REP["Repair (DISM, SFC, chkdsk, fsck, Net Reset)"]
         SEC["Security & Malware (YARA, ClamAV, VirusTotal)"]
         REC["Data Recovery (Trash, VSS, Temp, Carving)"]
-        AI["Optional AI Guard (Ollama qwen2.5-coder:7b)"]
     end
 
     TUI --> API
@@ -71,9 +70,6 @@ flowchart TD
     Start[Start sysmaint] --> Mode{Selected Mode?}
     Mode -->|tui| LaunchTUI[Launch Textual Terminal Client UI]
     Mode -->|serve| LaunchAPI[Start FastAPI Microservice on :8765]
-    Mode -->|ai| CheckAI{Ollama + 7B Model Ready?}
-    CheckAI -->|No| GuideUser[Print Guided Ollama/Docker Setup]
-    CheckAI -->|Yes| Analyze[Diagnose & Propose Safe Commands]
     Mode -->|diagnose / scan / repair / recovery| PrivCheck{Need Elevation?}
     PrivCheck -->|No| RunMod[Execute Module]
     PrivCheck -->|Yes| Elevate[UAC / sudo Elevation]
@@ -88,12 +84,11 @@ flowchart TD
 | Domain | Windows Tools & Features | Linux Tools & Features | Offline Capable |
 | :--- | :--- | :--- | :--- |
 | **Microservice** | FastAPI REST API + OpenAPI (`/docs`) | FastAPI REST API + OpenAPI (`/docs`) | Yes |
-| **Terminal Client UI** | Textual + Rich 6-tab dashboard | Textual + Rich 6-tab dashboard | Yes |
+| **Terminal Client UI** | Textual + Rich 5-tab dashboard | Textual + Rich 5-tab dashboard | Yes |
 | **System Repair** | `DISM /RestoreHealth` (online/WIM), `sfc /scannow`, `chkdsk` | `dpkg --verify`, `rpm -Va`, `pacman -Qk`, `fsck`, `journalctl` | Yes |
 | **Network Repair** | `netsh winsock reset`, `netsh int ip reset`, DNS flush | `NetworkManager` restart, `resolvectl` DNS flush | Yes |
 | **Malware & Security** | Built-in YARA heuristics, ClamAV, VirusTotal, Defender audit | Built-in YARA heuristics, ClamAV, VirusTotal, firewall audit | Yes (YARA/ClamAV) |
 | **Data Recovery** | Recycle Bin restore, `vssadmin` VSS shadows, Office temp drafts, file carving | FreeDesktop Trash restore, Btrfs/Timeshift, temp drafts, file carving | Yes |
-| **Optional AI Guard** | Local Ollama (`qwen2.5-coder:7b`) + guided setup | Local Ollama (`qwen2.5-coder:7b`) + guided setup | Yes (after pull) |
 
 ---
 
@@ -192,34 +187,7 @@ sysmaint recovery carve --source "./disk.img" --dest "./carved_out" --types pdf 
 </details>
 
 <details>
-<summary><strong>4. Optional Local AI Guard (Ollama 7B)</strong></summary>
-
-SysMaint uses **`qwen2.5-coder:7b`** (with `llama3.1:8b` as an alternative) because it is compact enough for local hardware while excelling at OS diagnostics, PowerShell/Bash repair commands, and structured JSON output.
-
-```bash
-# Check if Ollama / Docker and qwen2.5-coder:7b are ready (prints guided setup if missing)
-sysmaint ai status
-
-# Pull the recommended OS Guard model
-sysmaint ai pull
-
-# Describe a problem in plain English (read-only analysis)
-sysmaint ai ask "Windows Update fails with error 0x80070002 and disk is at 100%"
-
-# Execute safe recommended commands after reviewing
-sysmaint ai ask "DNS is not resolving after VPN disconnect" --execute --yes
-```
-
-If you run Ollama via **Docker** and want to verify it is working:
-```bash
-docker ps
-curl http://localhost:11434/api/tags
-```
-
-</details>
-
-<details>
-<summary><strong>5. Project Structure</strong></summary>
+<summary><strong>4. Project Structure</strong></summary>
 
 ```text
 sysmaint/
@@ -232,7 +200,6 @@ sysmaint/
 │   ├── config.py              # YAML/JSON configuration dataclasses
 │   ├── logging_setup.py
 │   ├── modules/
-│   │   ├── ai_assistant.py    # Optional local Ollama 7B OS Guard
 │   │   ├── backup.py          # Restore points & snapshots
 │   │   ├── cleaner.py         # Temp, browser, package & log cleanup
 │   │   ├── disk.py            # Partition usage, SMART, chkdsk/fsck
@@ -258,7 +225,7 @@ sysmaint/
 │   └── utils/
 ├── tests/
 ├── pyproject.toml             # uv & hatchling configuration
-├── USER_GUIDE.md              # Non-technical & CLI/Ollama/Docker guide
+├── USER_GUIDE.md              # Non-technical & CLI user guide
 └── CHANGELOG.md
 ```
 

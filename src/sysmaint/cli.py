@@ -19,7 +19,6 @@ from . import __brand__, __codename__, __version__
 from .config import SysMaintConfig, load_config
 from .logging_setup import setup_logging
 from .modules import (
-    ai_assistant as ai_module,
     backup as backup_module,
     cleaner as cleaner_module,
     disk as disk_module,
@@ -189,15 +188,6 @@ def build_parser() -> argparse.ArgumentParser:
     p_rec.add_argument("--types", nargs="+", help="File types to carve (pdf png jpg zip sqlite)")
     p_rec.add_argument("--limit", type=int, default=50, help="Max items to list or carve")
     p_rec.set_defaults(func=cmd_recovery)
-
-    # ai
-    p_ai = subparsers.add_parser("ai", help="Optional local Ollama AI Guard (qwen2.5-coder:7b)")
-    p_ai.add_argument("action", nargs="?", default="status", choices=["status", "pull", "ask"])
-    p_ai.add_argument("problem", nargs="*", help="Describe your system issue in plain English")
-    p_ai.add_argument("--model", default=None, help="Override Ollama model (default: qwen2.5-coder:7b)")
-    p_ai.add_argument("--endpoint", default=None, help="Override Ollama endpoint (default: http://localhost:11434)")
-    p_ai.add_argument("--execute", action="store_true", help="Execute AI-recommended commands (requires --yes)")
-    p_ai.set_defaults(func=cmd_ai)
 
     # security
     p_sec = subparsers.add_parser("security", help="Audit security posture (Antivirus, Firewall, Elevation)")
@@ -466,30 +456,6 @@ def cmd_recovery(args: argparse.Namespace, config: SysMaintConfig) -> dict[str, 
             )
         }
     return {"trash": recovery_module.list_trash_items(limit=args.limit)}
-
-
-def cmd_ai(args: argparse.Namespace, config: SysMaintConfig) -> dict[str, Any]:
-    """Handler for `sysmaint ai`."""
-    endpoint = args.endpoint or config.ai.endpoint
-    model = args.model or config.ai.model
-
-    if args.action == "status":
-        return {"ai_status": ai_module.check_ollama_environment(endpoint=endpoint, model=model)}
-    elif args.action == "pull":
-        return {"ai_pull": ai_module.pull_model(model=model)}
-    elif args.action == "ask":
-        problem = " ".join(args.problem or []).strip()
-        return {
-            "ai_assist": ai_module.analyze_problem(
-                problem_description=problem,
-                endpoint=endpoint,
-                model=model,
-                execute=args.execute,
-                auto_confirm=args.yes,
-                timeout=config.ai.timeout_seconds,
-            )
-        }
-    return {"ai_status": ai_module.check_ollama_environment(endpoint=endpoint, model=model)}
 
 
 def cmd_security(args: argparse.Namespace, config: SysMaintConfig) -> dict[str, Any]:

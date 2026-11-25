@@ -2,7 +2,7 @@
 
 # SysMaint User Guide
 
-**Version 3.0.0 (Sentinel Microservice) | Kennny7 Microservices**
+**Version 1.0.0 (Sentinel Microservice) | Kennny7 Microservices**
 
 A plain-English guide for both non-technical users and power users.
 
@@ -27,7 +27,37 @@ SysMaint is a personal computer health, security, repair, and data recovery assi
 
 ## 2. Easy Installation
 
-### Option A: Using `uv` (Recommended, Fastest)
+### Option A: Clickable Installer & App Shortcuts (Recommended for Non-Technical Users)
+
+- **Windows (Clickable `.exe` Installer):**
+  1. Download `SysMaint-Setup-v3.0.0.exe` from the GitHub Releases page.
+  2. Double-click the installer and click **Next** (the default options already add SysMaint to your `PATH` and create a **Desktop Shortcut** and **Start Menu** entry).
+  3. After installation, double-click the **SysMaint** icon on your Desktop or Start Menu anytime to launch the app.
+
+- **Windows Package Managers (Auto-PATH & Shortcut):**
+  ```powershell
+  # Winget
+  winget install Kennny7.SysMaint
+
+  # Scoop
+  scoop bucket add kennny7 https://github.com/Kennny7/scoop-kennny7
+  scoop install sysmaint
+
+  # Chocolatey
+  choco install sysmaint
+  ```
+
+- **Linux (Clickable Application Menu Launcher):**
+  Run the included setup script once:
+  ```bash
+  git clone https://github.com/Kennny7/sysmaint.git
+  cd sysmaint
+  chmod +x packaging/linux/install.sh
+  ./packaging/linux/install.sh
+  ```
+  This installs `sysmaint` into `~/.local/bin` (updating `PATH` automatically) and adds a clickable **SysMaint** icon to your Application Menu.
+
+### Option B: Using `uv` (For Developers / Power Users)
 
 1. Install `uv` if you do not have it yet:
    - **Windows (PowerShell):**
@@ -49,7 +79,7 @@ SysMaint is a personal computer health, security, repair, and data recovery assi
    uv run sysmaint tui
    ```
 
-### Option B: Standard `pip`
+### Option C: Standard `pip`
 
 ```bash
 git clone https://github.com/Kennny7/sysmaint.git
@@ -148,3 +178,9 @@ Connect the Terminal Client UI to the running microservice:
 ```bash
 sysmaint tui --server http://127.0.0.1:8765
 ```
+
+### Inside the Terminal UI
+- **Visual Progress**: Every button shows an animated spinner, progress bar, and plain-English status message at the bottom while working in the background.
+- **Plain-English Results**: Each tab displays a clean summary card by default.
+- **Collapsible Technical Log**: Press **`L`** (or click **Show / Hide Details Log**) to open or close the side technical log panel.
+- **Themes**: Press **`T`** to switch between **Tokyo Night** and **Catppuccin Mocha**.

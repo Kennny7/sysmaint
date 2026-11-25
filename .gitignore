@@ -111,3 +111,9 @@ Desktop.ini
 # Allow local overrides but not secrets
 *.local
 *.private
+
+# Private publishing & internal release guides
+docs/PRIVATE_*.md
+PRIVATE_*.md
+dist/
+*.spec

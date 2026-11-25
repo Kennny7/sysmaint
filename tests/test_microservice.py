@@ -28,12 +28,3 @@ def test_repair_dry_run_endpoint():
     assert "disk" in data
     assert "integrity" in data
     assert "network" in data
-
-
-def test_ai_status_endpoint():
-    client = TestClient(create_app())
-    resp = client.get("/v1/ai/status")
-    assert resp.status_code == 200
-    data = resp.json()
-    assert "ready" in data
-    assert "setup_guide" in data

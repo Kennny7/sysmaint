@@ -188,7 +188,9 @@ class SysMaintTUI(App):
 
     Footer {
         height: 3;
-        padding: 1 2;
+        border-top: solid $panel;
+        padding: 0 2;
+        content-align: left middle;
     }
 
     #activity-bar {

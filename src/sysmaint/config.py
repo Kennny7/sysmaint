@@ -80,15 +80,6 @@ class SystemConfig:
 
 
 @dataclass
-class AIConfig:
-    enabled: bool = False
-    provider: str = "ollama"
-    model: str = "qwen2.5-coder:7b"
-    endpoint: str = "http://localhost:11434"
-    timeout_seconds: int = 60
-
-
-@dataclass
 class SysMaintConfig:
     logging: LoggingConfig = field(default_factory=LoggingConfig)
     diagnostics: DiagnosticsConfig = field(default_factory=DiagnosticsConfig)
@@ -99,7 +90,6 @@ class SysMaintConfig:
     network: NetworkConfig = field(default_factory=NetworkConfig)
     ui: UIConfig = field(default_factory=UIConfig)
     system: SystemConfig = field(default_factory=SystemConfig)
-    ai: AIConfig = field(default_factory=AIConfig)
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "SysMaintConfig":
@@ -116,7 +106,6 @@ class SysMaintConfig:
         net_data = data.get("network", {})
         ui_data = data.get("ui", {})
         sys_data = data.get("system", {})
-        ai_data = data.get("ai", {})
 
         return cls(
             logging=LoggingConfig(
@@ -173,13 +162,6 @@ class SysMaintConfig:
             system=SystemConfig(
                 offline_mode=bool(sys_data.get("offline_mode", False)),
                 auto_yes=bool(sys_data.get("auto_yes", False)),
-            ),
-            ai=AIConfig(
-                enabled=bool(ai_data.get("enabled", False)),
-                provider=str(ai_data.get("provider", "ollama")),
-                model=str(ai_data.get("model", "qwen2.5-coder:7b")),
-                endpoint=str(ai_data.get("endpoint", "http://localhost:11434")),
-                timeout_seconds=int(ai_data.get("timeout_seconds", 60)),
             ),
         )
 

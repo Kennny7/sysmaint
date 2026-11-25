@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "sysmaint"
 version = "3.0.0"
-description = "Cross-Platform System Maintenance, Security, Data Recovery & AI Guard Microservice by Kennny7 Microservices"
+description = "Cross-Platform System Maintenance, Security & Data Recovery Microservice by Kennny7 Microservices"
 readme = "README.md"
 requires-python = ">=3.10"
 license = { text = "MIT" }
@@ -17,7 +17,6 @@ keywords = [
     "data-recovery",
     "malware-scanner",
     "diagnostics",
-    "ollama",
     "tui",
     "kennny7-microservices",
 ]

@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="assets/sysmaint-icon.jpg" alt="SysMaint Icon" width="140" />
+<img src="assets/sysmaint-icon.png" alt="SysMaint Icon" width="140" />
 
 # SysMaint
 
@@ -192,7 +192,7 @@ sysmaint recovery carve --source "./disk.img" --dest "./carved_out" --types pdf 
 ```text
 sysmaint/
 ├── assets/
-│   └── sysmaint-icon.jpg
+│   └── sysmaint-icon.png
 ├── src/sysmaint/
 │   ├── __init__.py            # Version (3.0.0), Codename, Kennny7 Microservices brand
 │   ├── __main__.py

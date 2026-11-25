@@ -1,0 +1,12 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=SysMaint
+GenericName=System Maintenance & Recovery
+Comment=System health diagnostics, malware scanning, repair, and data recovery by Kennny7 Microservices
+Exec=sysmaint tui
+Icon=sysmaint
+Terminal=true
+Categories=System;Utility;Security;
+Keywords=system;maintenance;repair;recovery;malware;diagnostics;
+StartupNotify=true

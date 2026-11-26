@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import platform
 import shutil
-from typing import Any, List, Optional
+from typing import Any
 
 import psutil
 
@@ -15,7 +15,7 @@ from ..utils.parsers import parse_fsck_output
 logger = logging.getLogger("sysmaint.disk")
 
 
-def get_disk_partitions() -> List[dict[str, Any]]:
+def get_disk_partitions() -> list[dict[str, Any]]:
     """
     Return all mounted partitions with storage metrics (total, used, free, percent).
     """
@@ -90,7 +90,7 @@ def check_smart_health() -> list[dict[str, Any]]:
     return drives
 
 
-def check_disk(repair: bool = False, volume: Optional[str] = None) -> dict[str, Any]:
+def check_disk(repair: bool = False, volume: str | None = None) -> dict[str, Any]:
     """
     Check disk/filesystem health and partition statistics.
 

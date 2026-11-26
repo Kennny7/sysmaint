@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Any
+from typing import Any, ClassVar
 
 from rich.json import JSON as RichJSON
 from rich.panel import Panel
@@ -45,7 +45,7 @@ class ElevationModal(ModalScreen[str]):
     }
     """
 
-    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
 
     def __init__(self, action_name: str) -> None:
         super().__init__()
@@ -105,7 +105,7 @@ class ConfirmLongTaskModal(ModalScreen[bool]):
     }
     """
 
-    BINDINGS = [Binding("escape", "cancel", "Cancel")]
+    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "cancel", "Cancel")]
 
     def __init__(self, task_name: str, estimate: str, details: str) -> None:
         super().__init__()
@@ -168,7 +168,7 @@ class TechnicalLogModal(ModalScreen[None]):
     }
     """
 
-    BINDINGS = [Binding("escape", "close_log", "Close")]
+    BINDINGS: ClassVar[list[Binding]] = [Binding("escape", "close_log", "Close")]
 
     def __init__(self, entries: list[tuple[str, Any]]) -> None:
         super().__init__()

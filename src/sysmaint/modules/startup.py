@@ -3,15 +3,14 @@
 from __future__ import annotations
 
 import logging
-import os
 import platform
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 logger = logging.getLogger("sysmaint.startup")
 
 
-def list_startup_items() -> List[dict[str, Any]]:
+def list_startup_items() -> list[dict[str, Any]]:
     """
     List all configured startup applications and autoruns across Windows or Linux.
 
@@ -20,7 +19,7 @@ def list_startup_items() -> List[dict[str, Any]]:
     """
     system = platform.system().lower()
     logger.info("Enumerating startup applications on %s", system)
-    items: List[dict[str, Any]] = []
+    items: list[dict[str, Any]] = []
 
     if system == "windows":
         from ..utils import windows

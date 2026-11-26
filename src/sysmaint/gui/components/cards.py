@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import customtkinter as ctk
-from typing import Callable, Optional
 
 from ..theme import (
     ACCENT_CYAN,
@@ -75,7 +76,7 @@ class MetricCard(ctk.CTkFrame):
         )
         self.sub_label.pack(anchor="w", padx=16, pady=(0, 12))
 
-    def update_values(self, value: str, subtitle: Optional[str] = None):
+    def update_values(self, value: str, subtitle: str | None = None):
         self.val_label.configure(text=value)
         if subtitle is not None:
             self.sub_label.configure(text=subtitle)
@@ -89,8 +90,8 @@ class HealthScoreCard(ctk.CTkFrame):
         master,
         score: int = 100,
         grade: str = "Excellent",
-        on_scan: Optional[Callable] = None,
-        on_fix: Optional[Callable] = None,
+        on_scan: Callable | None = None,
+        on_fix: Callable | None = None,
         **kwargs,
     ):
         super().__init__(
@@ -201,8 +202,8 @@ class SectionHeader(ctk.CTkFrame):
         master,
         title: str,
         subtitle: str = "",
-        btn_text: Optional[str] = None,
-        btn_cmd: Optional[Callable] = None,
+        btn_text: str | None = None,
+        btn_cmd: Callable | None = None,
         **kwargs,
     ):
         super().__init__(master, fg_color="transparent", **kwargs)

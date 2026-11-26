@@ -3,11 +3,16 @@
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
+
 import customtkinter as ctk
-from typing import Callable, Optional
 
 from ...config import SysMaintConfig
-from ...modules.network import flush_dns, get_listening_ports, get_network_interfaces, test_connectivity
+from ...modules.network import (
+    flush_dns,
+    get_network_interfaces,
+    test_connectivity,
+)
 from ...theme import ACCENT_CYAN, ACCENT_EMERALD, DARK_BG_CARD, DARK_BORDER
 from ..components.cards import MetricCard, SectionHeader
 
@@ -15,7 +20,7 @@ from ..components.cards import MetricCard, SectionHeader
 class NetworkView(ctk.CTkScrollableFrame):
     """Network Diagnostics, DNS Cache Flush, and Port Viewer."""
 
-    def __init__(self, master, config: SysMaintConfig, log_callback: Optional[Callable] = None, **kwargs):
+    def __init__(self, master, config: SysMaintConfig, log_callback: Callable | None = None, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         self.config = config
         self.log_callback = log_callback

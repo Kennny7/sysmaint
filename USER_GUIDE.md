@@ -30,7 +30,7 @@ SysMaint is a personal computer health, security, repair, and data recovery assi
 ### Option A: Clickable Installer & App Shortcuts (Recommended for Non-Technical Users)
 
 - **Windows (Clickable `.exe` Installer):**
-  1. Download `SysMaint-Setup-v3.0.0.exe` from the GitHub Releases page.
+  1. Download `SysMaint-Setup-v1.0.0.exe` from the GitHub Releases page.
   2. Double-click the installer and click **Next** (the default options already add SysMaint to your `PATH` and create a **Desktop Shortcut** and **Start Menu** entry).
   3. After installation, double-click the **SysMaint** icon on your Desktop or Start Menu anytime to launch the app.
 

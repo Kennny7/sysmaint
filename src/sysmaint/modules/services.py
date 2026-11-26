@@ -5,7 +5,8 @@ from __future__ import annotations
 import logging
 import platform
 import shutil
-from typing import Any, Iterable, List
+from collections.abc import Iterable
+from typing import Any
 
 import psutil
 
@@ -14,7 +15,7 @@ from ..utils.common import run_command
 logger = logging.getLogger("sysmaint.services")
 
 
-def list_services() -> List[dict[str, Any]]:
+def list_services() -> list[dict[str, Any]]:
     """
     List all installed services across Windows or Linux safely.
 
@@ -23,7 +24,7 @@ def list_services() -> List[dict[str, Any]]:
     """
     system = platform.system().lower()
     logger.info("Enumerating services on %s", system)
-    services: List[dict[str, Any]] = []
+    services: list[dict[str, Any]] = []
 
     if system == "windows":
         for svc in psutil.win_service_iter():

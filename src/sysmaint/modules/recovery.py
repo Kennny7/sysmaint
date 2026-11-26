@@ -9,7 +9,7 @@ import re
 import shutil
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from ..utils.common import format_bytes, run_command
 
@@ -121,7 +121,7 @@ def list_trash_items(limit: int = 50) -> dict[str, Any]:
 
 def restore_trash_item(
     name: str,
-    destination: Optional[Path] = None,
+    destination: Path | None = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """Restore a deleted file or folder from Recycle Bin / Trash to its original or custom path."""
@@ -191,7 +191,7 @@ def list_shadow_copies() -> dict[str, Any]:
                 current["volume"] = stripped.split(":", 1)[1].strip()
             elif stripped.startswith("Shadow Copy Volume:"):
                 current["shadow_volume"] = stripped.split(":", 1)[1].strip()
-            elif stripped.startswith("Creation Time:") or stripped.startswith("creation time:"):
+            elif stripped.startswith(("Creation Time:", "creation time:")):
                 current["created_at"] = stripped.split(":", 1)[1].strip()
         if current:
             shadows.append(current)
@@ -278,7 +278,7 @@ def scan_recoverable_temp_files(limit: int = 50) -> dict[str, Any]:
 def carve_recoverable_files(
     source_path: Path,
     output_dir: Path,
-    file_types: Optional[list[str]] = None,
+    file_types: list[str] | None = None,
     max_files: int = 50,
     dry_run: bool = False,
 ) -> dict[str, Any]:
@@ -310,7 +310,7 @@ def carve_recoverable_files(
 
     for sig_name, spec in active_sigs.items():
         header: bytes = spec["header"]
-        footer: Optional[bytes] = spec["footer"]
+        footer: bytes | None = spec["footer"]
         ext: str = spec["ext"]
         max_size: int = spec["max_size"]
 

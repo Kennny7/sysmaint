@@ -5,7 +5,6 @@ from __future__ import annotations
 import logging
 import sys
 from pathlib import Path
-from typing import Optional
 
 try:
     from rich.logging import RichHandler
@@ -15,7 +14,7 @@ except ImportError:
 
 def setup_logging(
     level: str = "INFO",
-    log_file: Optional[Path | str] = None,
+    log_file: Path | str | None = None,
     verbose: bool = False,
 ) -> logging.Logger:
     """

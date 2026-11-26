@@ -96,7 +96,7 @@ flowchart TD
 
 ### Clickable Installers & Package Managers (No Manual PATH Setup)
 
-- **Windows**: Run `SysMaint-Setup-v3.0.0.exe` (creates Desktop/Start Menu shortcuts and configures `PATH` automatically) or install via `winget install Kennny7.SysMaint`.
+- **Windows**: Run `SysMaint-Setup-v1.0.0.exe` (creates Desktop/Start Menu shortcuts and configures `PATH` automatically) or install via `winget install Kennny7.SysMaint`.
 - **Linux**: Run `./packaging/linux/install.sh` to install `sysmaint`, update `PATH`, and register the clickable **SysMaint** Application Menu launcher (`sysmaint.desktop`).
 
 ### From Source (with `uv`)

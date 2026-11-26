@@ -5,7 +5,7 @@ from __future__ import annotations
 import platform
 import time
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from fastapi import FastAPI, Request
 from pydantic import BaseModel, Field
@@ -41,7 +41,7 @@ class ScanRequest(BaseModel):
     clamav: bool = False
     integrity: bool = True
     offline: bool = True
-    target: Optional[str] = None
+    target: str | None = None
 
 
 class RepairRequest(BaseModel):
@@ -49,25 +49,25 @@ class RepairRequest(BaseModel):
     files: bool = False
     services: bool = False
     network: bool = False
-    offline_source: Optional[str] = None
+    offline_source: str | None = None
     dry_run: bool = True
 
 
 class TrashRestoreRequest(BaseModel):
     name: str
-    destination: Optional[str] = None
+    destination: str | None = None
     dry_run: bool = False
 
 
 class CarveRequest(BaseModel):
     source_path: str
     output_dir: str
-    file_types: Optional[list[str]] = None
+    file_types: list[str] | None = None
     max_files: int = Field(default=50, ge=1, le=500)
     dry_run: bool = True
 
 
-def create_app(config: Optional[SysMaintConfig] = None) -> FastAPI:
+def create_app(config: SysMaintConfig | None = None) -> FastAPI:
     """Create the SysMaint Sentinel FastAPI microservice."""
     cfg = config or load_config()
     app = FastAPI(

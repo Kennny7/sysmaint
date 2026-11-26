@@ -3,8 +3,6 @@
 from __future__ import annotations
 
 import customtkinter as ctk
-import tkinter as tk
-from typing import Optional
 
 
 class ConsoleWidget(ctk.CTkFrame):
@@ -49,7 +47,7 @@ class ConsoleWidget(ctk.CTkFrame):
         self.text_box.pack(fill="both", expand=True, padx=4, pady=(0, 4))
         self.write_line("SysMaint Console Ready.\n")
 
-    def write_line(self, text: str, tag: Optional[str] = None):
+    def write_line(self, text: str, tag: str | None = None):
         """Append a line to the console and scroll to end."""
         self.text_box.configure(state="normal")
         self.text_box.insert("end", text + "\n")

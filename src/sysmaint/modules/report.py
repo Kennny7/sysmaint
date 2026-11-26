@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 import json
-import os
 import platform
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 
 def build_report(results: dict[str, Any]) -> dict[str, Any]:
@@ -79,7 +78,7 @@ def format_report(report: dict[str, Any], json_output: bool = False) -> str:
 
 def generate_html_report(
     report: dict[str, Any],
-    output_path: Optional[str | Path] = None,
+    output_path: str | Path | None = None,
 ) -> str:
     """
     Generate a modern, responsive standalone HTML health report dashboard.

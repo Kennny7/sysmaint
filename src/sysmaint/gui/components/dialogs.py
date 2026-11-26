@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
+
 import customtkinter as ctk
-from typing import Callable, Optional
 
 
 def show_confirmation_dialog(

@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import logging
-import os
 import platform
 from pathlib import Path
-from typing import Any, List
+from typing import Any
 
 from ..config import SysMaintConfig
 from ..utils.common import format_bytes, run_command
@@ -14,12 +13,12 @@ from ..utils.common import format_bytes, run_command
 logger = logging.getLogger("sysmaint.restore")
 
 
-def list_available_backups(config: SysMaintConfig) -> List[dict[str, Any]]:
+def list_available_backups(config: SysMaintConfig) -> list[dict[str, Any]]:
     """
     List all available System Restore points or backup archives.
     """
     system = platform.system().lower()
-    backups: List[dict[str, Any]] = []
+    backups: list[dict[str, Any]] = []
 
     if system == "windows":
         from ..utils import windows
@@ -42,7 +41,6 @@ def list_available_backups(config: SysMaintConfig) -> List[dict[str, Any]]:
         for f in backup_dir.glob("sysmaint-*"):
             if f.is_file():
                 size = f.stat().st_size
-                mtime = f.stat().st_mtime
                 backups.append({
                     "id": f.name,
                     "name": f.name,

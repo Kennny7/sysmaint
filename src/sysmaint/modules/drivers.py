@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import platform
 import shutil
-from typing import Any, List
+from typing import Any
 
 from ..utils.common import run_command
 from ..utils.parsers import parse_driverquery_output
@@ -23,8 +23,8 @@ def check_drivers() -> dict[str, Any]:
     system = platform.system().lower()
     logger.info("Enumerating drivers and hardware devices for %s", system)
 
-    drivers: List[dict[str, Any]] = []
-    faulty_devices: List[dict[str, Any]] = []
+    drivers: list[dict[str, Any]] = []
+    faulty_devices: list[dict[str, Any]] = []
 
     if system == "windows":
         from ..utils.windows import get_pnp_device_errors

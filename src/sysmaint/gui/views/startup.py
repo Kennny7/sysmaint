@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-import threading
+from collections.abc import Callable
+
 import customtkinter as ctk
-from typing import Callable, Optional
 
 from ...config import SysMaintConfig
 from ...modules.startup import list_startup_items, toggle_startup_item
@@ -15,7 +15,7 @@ from ..components.cards import MetricCard, SectionHeader
 class StartupView(ctk.CTkScrollableFrame):
     """Startup & Autorun Application Manager view."""
 
-    def __init__(self, master, config: SysMaintConfig, log_callback: Optional[Callable] = None, **kwargs):
+    def __init__(self, master, config: SysMaintConfig, log_callback: Callable | None = None, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         self.config = config
         self.log_callback = log_callback

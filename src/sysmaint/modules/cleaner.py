@@ -5,21 +5,20 @@ from __future__ import annotations
 import logging
 import os
 import platform
-import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
-from ..utils.common import format_bytes, safe_delete_dir_contents, safe_delete_file
+from ..utils.common import format_bytes, safe_delete_dir_contents
 
 logger = logging.getLogger("sysmaint.cleaner")
 
 
-def get_junk_targets() -> Dict[str, List[Path]]:
+def get_junk_targets() -> dict[str, list[Path]]:
     """
     Locate junk file target paths grouped by category based on current OS.
     """
     system = platform.system().lower()
-    targets: Dict[str, List[Path]] = {
+    targets: dict[str, list[Path]] = {
         "user_temp": [],
         "system_temp": [],
         "browser_cache": [],
@@ -133,7 +132,7 @@ def calculate_dir_size(dir_path: Path) -> tuple[int, int]:
     return total_size, file_count
 
 
-def scan_junk(categories: Optional[List[str]] = None) -> dict[str, Any]:
+def scan_junk(categories: list[str] | None = None) -> dict[str, Any]:
     """
     Scan system for junk, temporary files, and caches without deleting anything.
 
@@ -147,7 +146,7 @@ def scan_junk(categories: Optional[List[str]] = None) -> dict[str, Any]:
     all_targets = get_junk_targets()
     selected_cats = categories or list(all_targets.keys())
 
-    breakdown: Dict[str, dict[str, Any]] = {}
+    breakdown: dict[str, dict[str, Any]] = {}
     total_bytes = 0
     total_files = 0
 
@@ -184,7 +183,7 @@ def scan_junk(categories: Optional[List[str]] = None) -> dict[str, Any]:
 
 
 def clean_junk(
-    categories: Optional[List[str]] = None,
+    categories: list[str] | None = None,
     dry_run: bool = False,
 ) -> dict[str, Any]:
     """
@@ -214,7 +213,7 @@ def clean_junk(
 
     total_freed = 0
     total_deleted = 0
-    results: Dict[str, dict[str, Any]] = {}
+    results: dict[str, dict[str, Any]] = {}
 
     for cat in selected_cats:
         paths = all_targets.get(cat, [])

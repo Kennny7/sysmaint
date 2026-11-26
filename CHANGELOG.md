@@ -3,7 +3,7 @@
 All notable changes to **SysMaint** by **Kennny7 Microservices** are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and [Semantic Versioning](https://semver.org/).
 
-## [1.0.0] - Sentinel Microservice (2026-11-25)
+## [0.1.0] - Sentinel Microservice (2026-11-25)
 
 ### Added
 - **Microservice Architecture (`sysmaint serve` / `sysmaint-serve`)**: FastAPI + Uvicorn HTTP microservice with OpenAPI docs at `/docs`, `/health`, `/v1/sysinfo`, `/v1/smart-scan`, `/v1/diagnose`, `/v1/scan`, `/v1/repair`, `/v1/recovery/*`, and `/v1/ai/*`, plus `X-Powered-By: Kennny7 Microservices` service headers.

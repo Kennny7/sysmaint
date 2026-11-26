@@ -2,7 +2,7 @@
 ; Builds a clickable Windows .exe installer with default PATH setup & shortcuts.
 
 #define MyAppName "SysMaint"
-#define MyAppVersion "1.0.0"
+#define MyAppVersion "0.1.0"
 #define MyAppPublisher "Kennny7 Microservices"
 #define MyAppURL "https://github.com/Kennny7/sysmaint"
 #define MyAppExeName "sysmaint.exe"

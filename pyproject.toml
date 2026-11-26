@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "sysmaint"
-version = "1.0.0"
+version = "0.1.0"
 description = "Cross-Platform System Maintenance, Security & Data Recovery Microservice by Kennny7 Microservices"
 readme = "README.md"
 requires-python = ">=3.10"

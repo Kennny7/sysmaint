@@ -1,6 +1,6 @@
 """SysMaint - Cross-Platform System Maintenance, Security & Recovery Microservice."""
 
-__version__ = "1.0.0"
+__version__ = "0.1.0"
 __codename__ = "Sentinel Microservice"
 __brand__ = "Kennny7 Microservices"
 __author__ = "Kennny7"

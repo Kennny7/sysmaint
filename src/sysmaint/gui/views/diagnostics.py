@@ -3,10 +3,9 @@
 from __future__ import annotations
 
 import threading
-import customtkinter as ctk
-from typing import Callable, Optional
+from collections.abc import Callable
 
-import psutil
+import customtkinter as ctk
 
 from ...config import SysMaintConfig
 from ...modules.disk import check_disk, get_disk_partitions
@@ -14,13 +13,13 @@ from ...modules.drivers import check_drivers
 from ...modules.memory import check_memory, optimize_memory
 from ...modules.services import control_service, list_services
 from ...theme import ACCENT_CYAN, ACCENT_EMERALD, ACCENT_ROSE, DARK_BG_CARD, DARK_BORDER
-from ..components.cards import MetricCard, SectionHeader
+from ..components.cards import SectionHeader
 
 
 class DiagnosticsView(ctk.CTkFrame):
     """System Hardware & OS Diagnostics view with tabbed sub-panels."""
 
-    def __init__(self, master, config: SysMaintConfig, log_callback: Optional[Callable] = None, **kwargs):
+    def __init__(self, master, config: SysMaintConfig, log_callback: Callable | None = None, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         self.config = config
         self.log_callback = log_callback

@@ -3,16 +3,17 @@
 from __future__ import annotations
 
 import threading
-import customtkinter as ctk
+from collections.abc import Callable
 from tkinter import filedialog
-from typing import Callable, Optional
+
+import customtkinter as ctk
 
 from ...config import SysMaintConfig, save_config
+from ...modules.optimizer import run_smart_scan
 from ...modules.report import build_report, generate_html_report
 from ...modules.scheduler import get_schedule_status, install_schedule, remove_schedule
-from ...modules.sysinfo import get_system_specs
-from ...modules.optimizer import run_smart_scan
 from ...modules.security import audit_security_posture
+from ...modules.sysinfo import get_system_specs
 from ...theme import ACCENT_CYAN, ACCENT_EMERALD, DARK_BG_CARD, DARK_BORDER
 from ..components.cards import SectionHeader
 
@@ -20,7 +21,7 @@ from ..components.cards import SectionHeader
 class SettingsView(ctk.CTkScrollableFrame):
     """Application Configuration, Automated Scheduler, and Report Export view."""
 
-    def __init__(self, master, config: SysMaintConfig, log_callback: Optional[Callable] = None, **kwargs):
+    def __init__(self, master, config: SysMaintConfig, log_callback: Callable | None = None, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         self.config = config
         self.log_callback = log_callback

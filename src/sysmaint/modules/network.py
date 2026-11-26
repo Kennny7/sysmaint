@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import platform
 import socket
-from typing import Any, List, Optional
+from typing import Any
 
 import psutil
 
@@ -15,7 +15,7 @@ from ..utils.parsers import parse_ping_output
 logger = logging.getLogger("sysmaint.network")
 
 
-def get_network_interfaces() -> List[dict[str, Any]]:
+def get_network_interfaces() -> list[dict[str, Any]]:
     """
     Return all network adapters with IP addresses, MAC, status, and traffic stats.
     """
@@ -107,7 +107,7 @@ def flush_dns() -> dict[str, Any]:
     return {"success": False, "message": f"Unsupported platform: {system}"}
 
 
-def get_listening_ports(limit: int = 50) -> List[dict[str, Any]]:
+def get_listening_ports(limit: int = 50) -> list[dict[str, Any]]:
     """
     List active listening network sockets and their associated processes.
     """

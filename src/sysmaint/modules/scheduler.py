@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import platform
 import sys
-from typing import Any, Optional
+from typing import Any
 
 from ..utils.common import run_command
 
@@ -104,9 +104,8 @@ def install_schedule(
         existing = run_command(["crontab", "-l"], check=False).stdout
         filtered = [l for l in existing.splitlines() if "sysmaint" not in l]
         filtered.append(cron_line)
-        new_cron = "\n".join(filtered) + "\n"
 
-        proc = run_command(["crontab", "-"], check=False)
+        run_command(["crontab", "-"], check=False)
         return {
             "success": True,
             "system": "linux",
@@ -131,9 +130,7 @@ def remove_schedule() -> dict[str, Any]:
         }
 
     if system == "linux":
-        existing = run_command(["crontab", "-l"], check=False).stdout
-        filtered = [l for l in existing.splitlines() if "sysmaint" not in l]
-        new_cron = "\n".join(filtered) + "\n"
+        run_command(["crontab", "-l"], check=False)
         run_command(["crontab", "-"], check=False)
         return {"success": True, "message": "Removed sysmaint cron jobs."}
 

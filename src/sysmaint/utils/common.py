@@ -7,8 +7,8 @@ import logging
 import os
 import re
 import subprocess
+from collections.abc import Callable, Iterable
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Union
 
 logger = logging.getLogger("sysmaint.utils")
 
@@ -17,10 +17,10 @@ def run_command(
     command: Iterable[str],
     *,
     check: bool = False,
-    timeout: Optional[int] = None,
+    timeout: int | None = None,
     capture_output: bool = True,
     shell: bool = False,
-    cwd: Optional[Union[str, Path]] = None,
+    cwd: str | Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     """
     Run a system command safely with structured logging and error handling.
@@ -36,9 +36,7 @@ def run_command(
     Returns:
         subprocess.CompletedProcess with text stdout/stderr.
     """
-    if isinstance(command, str) and not shell:
-        cmd_list = [command]
-    elif isinstance(command, str) and shell:
+    if isinstance(command, str) and not shell or isinstance(command, str) and shell:
         cmd_list = [command]
     else:
         cmd_list = list(command)
@@ -58,7 +56,7 @@ def run_command(
             encoding="utf-8",
             errors="replace",
         )
-    except subprocess.TimeoutExpired as exc:
+    except subprocess.TimeoutExpired:
         logger.error("Command timed out after %ds: %s", timeout, display_cmd)
         return subprocess.CompletedProcess(
             args=cmd_list,
@@ -99,7 +97,7 @@ def run_command(
 _PERCENT_RE = re.compile(r"(\d{1,3}(?:\.\d+)?)\s*(?:%|percent)", re.IGNORECASE)
 
 
-def extract_progress_percent(line: str) -> Optional[float]:
+def extract_progress_percent(line: str) -> float | None:
     """Extract a real percentage (0-100) from command output lines (DISM, SFC, chkdsk)."""
     match = _PERCENT_RE.search(line)
     if not match:
@@ -113,8 +111,8 @@ def extract_progress_percent(line: str) -> Optional[float]:
 def stream_command(
     command: Iterable[str],
     *,
-    on_line: Optional[Callable[[str, Optional[float]], None]] = None,
-    cwd: Optional[Union[str, Path]] = None,
+    on_line: Callable[[str, float | None], None] | None = None,
+    cwd: str | Path | None = None,
 ) -> subprocess.CompletedProcess[str]:
     """
     Execute a command while streaming live output lines and parsed percentages.
@@ -174,7 +172,7 @@ def stream_command(
     )
 
 
-def format_bytes(num_bytes: Union[int, float]) -> str:
+def format_bytes(num_bytes: float) -> str:
     """
     Convert a byte count into a human-readable string (e.g., '14.2 GB', '512 KB').
     """
@@ -189,7 +187,7 @@ def format_bytes(num_bytes: Union[int, float]) -> str:
     return f"{num_bytes:.2f} EB"
 
 
-def compute_sha256(file_path: Union[str, Path], chunk_size: int = 65536) -> Optional[str]:
+def compute_sha256(file_path: str | Path, chunk_size: int = 65536) -> str | None:
     """
     Compute SHA-256 hash of a file safely in chunks.
 
@@ -211,7 +209,7 @@ def compute_sha256(file_path: Union[str, Path], chunk_size: int = 65536) -> Opti
         return None
 
 
-def safe_delete_file(file_path: Union[str, Path]) -> tuple[bool, int]:
+def safe_delete_file(file_path: str | Path) -> tuple[bool, int]:
     """
     Safely delete a file, returning (success, bytes_freed).
     """
@@ -226,7 +224,7 @@ def safe_delete_file(file_path: Union[str, Path]) -> tuple[bool, int]:
     return False, 0
 
 
-def safe_delete_dir_contents(dir_path: Union[str, Path]) -> tuple[int, int]:
+def safe_delete_dir_contents(dir_path: str | Path) -> tuple[int, int]:
     """
     Safely delete all files and subdirectories inside a folder without deleting the folder itself.
 

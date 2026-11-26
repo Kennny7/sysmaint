@@ -5,9 +5,9 @@ from .console import ConsoleWidget
 from .dialogs import show_confirmation_dialog
 
 __all__ = [
-    "MetricCard",
-    "HealthScoreCard",
-    "SectionHeader",
     "ConsoleWidget",
+    "HealthScoreCard",
+    "MetricCard",
+    "SectionHeader",
     "show_confirmation_dialog",
 ]

@@ -5,12 +5,11 @@ from __future__ import annotations
 import argparse
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 try:
     from rich.console import Console
     from rich.panel import Panel
-    from rich.table import Table
     console = Console()
 except ImportError:
     console = None
@@ -20,21 +19,53 @@ from .config import SysMaintConfig, load_config
 from .logging_setup import setup_logging
 from .modules import (
     backup as backup_module,
+)
+from .modules import (
     cleaner as cleaner_module,
+)
+from .modules import (
     disk as disk_module,
+)
+from .modules import (
     drivers as drivers_module,
+)
+from .modules import (
     integrity as integrity_module,
+)
+from .modules import (
     malware as malware_module,
+)
+from .modules import (
     memory as memory_module,
+)
+from .modules import (
     network as network_module,
+)
+from .modules import (
     optimizer as optimizer_module,
+)
+from .modules import (
     recovery as recovery_module,
+)
+from .modules import (
     report as report_module,
+)
+from .modules import (
     restore as restore_module,
+)
+from .modules import (
     scheduler as scheduler_module,
+)
+from .modules import (
     security as security_module,
+)
+from .modules import (
     services as services_module,
+)
+from .modules import (
     startup as startup_module,
+)
+from .modules import (
     sysinfo as sysinfo_module,
 )
 from .utils.escalate import is_elevated, request_elevation
@@ -536,7 +567,7 @@ def cmd_report(args: argparse.Namespace, config: SysMaintConfig) -> dict[str, An
     return results
 
 
-def main(argv: Optional[list[str]] = None) -> None:
+def main(argv: list[str] | None = None) -> None:
     """Main entry point for SysMaint CLI."""
     parser = build_parser()
     args = parser.parse_args(argv)

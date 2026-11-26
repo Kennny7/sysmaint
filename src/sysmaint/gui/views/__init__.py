@@ -12,14 +12,14 @@ from .settings import SettingsView
 from .startup import StartupView
 
 __all__ = [
-    "DashboardView",
+    "BackupView",
     "CleanerView",
+    "DashboardView",
     "DiagnosticsView",
     "IntegrityView",
     "MalwareView",
-    "StartupView",
     "NetworkView",
     "SecurityView",
-    "BackupView",
     "SettingsView",
+    "StartupView",
 ]

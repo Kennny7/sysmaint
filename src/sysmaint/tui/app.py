@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import platform
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any, ClassVar
 
 import httpx
 import psutil
@@ -281,7 +282,7 @@ class SysMaintTUI(App):
     }
     """
 
-    BINDINGS = [
+    BINDINGS: ClassVar[list[Binding]] = [
         Binding("q", "quit", "Quit"),
         Binding("r", "refresh_metrics", "Refresh"),
         Binding("l", "open_log", "View Technical Log"),
@@ -290,8 +291,8 @@ class SysMaintTUI(App):
 
     def __init__(
         self,
-        config: Optional[SysMaintConfig] = None,
-        server_url: Optional[str] = None,
+        config: SysMaintConfig | None = None,
+        server_url: str | None = None,
     ) -> None:
         super().__init__()
         self.cfg = config or load_config()
@@ -482,7 +483,7 @@ class SysMaintTUI(App):
         status.update(message)
         live.update(live_line)
 
-    def _update_live_progress(self, line: str, percent: Optional[float]) -> None:
+    def _update_live_progress(self, line: str, percent: float | None) -> None:
         progress = self.query_one("#activity-progress", ProgressBar)
         pct_lbl = self.query_one("#activity-percent", Static)
         live = self.query_one("#activity-live-line", Static)
@@ -525,9 +526,9 @@ class SysMaintTUI(App):
         title: str,
         status_msg: str,
         target_id: str,
-        fn: Callable[[Callable[[str, Optional[float]], None]], tuple[Any, Any]],
+        fn: Callable[[Callable[[str, float | None], None]], tuple[Any, Any]],
         requires_admin: bool = False,
-        long_estimate: Optional[str] = None,
+        long_estimate: str | None = None,
         long_details: str = "",
     ) -> None:
         if self._busy:
@@ -569,9 +570,9 @@ class SysMaintTUI(App):
         self,
         target_id: str,
         title: str,
-        fn: Callable[[Callable[[str, Optional[float]], None]], tuple[Any, Any]],
+        fn: Callable[[Callable[[str, float | None], None]], tuple[Any, Any]],
     ) -> None:
-        def report_progress(line: str, pct: Optional[float]) -> None:
+        def report_progress(line: str, pct: float | None) -> None:
             self.call_from_thread(self._update_live_progress, line, pct)
 
         try:
@@ -685,7 +686,7 @@ class SysMaintTUI(App):
                 fn=lambda cb: self._task_svc_get(url, "/v1/sysinfo", cb),
             )
 
-    def _task_quick_scan(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_quick_scan(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Step 1/3: Checking memory usage...", 25.0)
         mem = memory.check_memory()
         cb("Step 2/3: Checking disk partitions...", 60.0)
@@ -704,13 +705,13 @@ class SysMaintTUI(App):
         table.add_row("Overall Scan", "Completed safely (no files modified)")
         return table, {"smart_scan": data, "memory": mem, "disk": dsk}
 
-    def _task_integrity(self, repair: bool, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_integrity(self, repair: bool, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         res = integrity.check_integrity(repair=repair, progress_cb=cb)
         status = res.get("status", "Checked")
         msg = f"[bold cyan]System File Status:[/bold cyan] {status}\nPress [bold]L[/bold] (View Technical Log) for full DISM/SFC output."
         return msg, res
 
-    def _task_repair_preview(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_repair_preview(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Generating dry-run repair plan...", 50.0)
         net_preview = network.reset_network_stack(dry_run=True)
         res = {
@@ -728,7 +729,7 @@ class SysMaintTUI(App):
         table.add_row("Network Reset", ", ".join(net_preview.get("commands", ["NetworkManager restart"])))
         return table, res
 
-    def _task_net_check(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_net_check(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Step 1/2: Pinging 1.1.1.1...", 40.0)
         ping_res = network.test_connectivity("1.1.1.1")
         cb("Step 2/2: Flushing DNS resolver cache...", 85.0)
@@ -741,7 +742,7 @@ class SysMaintTUI(App):
         )
         return msg, {"ping": ping_res, "dns_flush": dns_res}
 
-    def _task_sec_audit(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_sec_audit(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Inspecting firewall, antivirus, and privilege state...", 50.0)
         res = security.audit_security_posture()
         cb("Audit complete.", 100.0)
@@ -752,7 +753,7 @@ class SysMaintTUI(App):
             table.add_row(str(key).replace("_", " ").title(), str(val))
         return table, res
 
-    def _task_malware_scan(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_malware_scan(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Scanning Downloads, Temp, and Startup folders offline...", None)
         res = malware.scan(self.cfg.malware, offline=True, quick_scan=True)
         threats = res.get("threats_found", res.get("infected_count", 0))
@@ -763,7 +764,7 @@ class SysMaintTUI(App):
         )
         return msg, res
 
-    def _task_trash_list(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_trash_list(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Listing Recycle Bin / Trash items...", 50.0)
         res = recovery.list_trash_items(limit=25)
         items = res.get("items", [])
@@ -778,7 +779,7 @@ class SysMaintTUI(App):
             table.add_row(item.get("name", ""), item.get("size_formatted", ""), item.get("deleted_date", ""))
         return table, res
 
-    def _task_temp_rec(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_temp_rec(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Scanning Office, LibreOffice, and temp auto-recovery folders...", 50.0)
         res = recovery.scan_recoverable_temp_files(limit=25)
         files = res.get("files", [])
@@ -793,7 +794,7 @@ class SysMaintTUI(App):
             table.add_row(f.get("name", ""), f.get("size_formatted", ""), f.get("modified", ""))
         return table, res
 
-    def _task_shadows(self, cb: Callable[[str, Optional[float]], None]) -> tuple[Any, Any]:
+    def _task_shadows(self, cb: Callable[[str, float | None], None]) -> tuple[Any, Any]:
         cb("Querying system restore snapshots...", 50.0)
         res = recovery.list_shadow_copies()
         count = res.get("count", 0)
@@ -806,7 +807,7 @@ class SysMaintTUI(App):
         self,
         base_url: str,
         path: str,
-        cb: Callable[[str, Optional[float]], None],
+        cb: Callable[[str, float | None], None],
     ) -> tuple[Any, Any]:
         cb(f"Requesting {base_url}{path}...", 50.0)
         try:
@@ -823,7 +824,7 @@ class SysMaintTUI(App):
             return f"[yellow]Service is not running at {base_url}.[/yellow]\nStart it in a terminal with: [bold]sysmaint serve[/bold]", err
 
 
-def launch_tui(config: Optional[SysMaintConfig] = None, server_url: Optional[str] = None) -> None:
+def launch_tui(config: SysMaintConfig | None = None, server_url: str | None = None) -> None:
     """Launch the SysMaint Terminal Client UI."""
     app = SysMaintTUI(config=config, server_url=server_url)
     app.run()

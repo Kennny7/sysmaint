@@ -5,7 +5,7 @@ from __future__ import annotations
 import logging
 import platform
 import shutil
-from typing import Any, List
+from typing import Any
 
 from ..utils.escalate import is_elevated
 
@@ -22,7 +22,7 @@ def audit_security_posture() -> dict[str, Any]:
     system = platform.system().lower()
     logger.info("Auditing security posture for %s", system)
 
-    issues: List[str] = []
+    issues: list[str] = []
     score = 100
 
     elevated = is_elevated()

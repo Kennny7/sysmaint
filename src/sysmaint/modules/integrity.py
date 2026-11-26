@@ -5,7 +5,8 @@ from __future__ import annotations
 import logging
 import platform
 import shutil
-from typing import Any, Callable, Optional
+from collections.abc import Callable
+from typing import Any
 
 from ..utils.common import run_command, stream_command
 from ..utils.parsers import parse_dism_output, parse_sfc_output
@@ -16,7 +17,7 @@ logger = logging.getLogger("sysmaint.integrity")
 def check_integrity(
     repair: bool = False,
     offline_source: str | None = None,
-    progress_cb: Optional[Callable[[str, Optional[float]], None]] = None,
+    progress_cb: Callable[[str, float | None], None] | None = None,
 ) -> dict[str, Any]:
     """
     Verify system file and package integrity.

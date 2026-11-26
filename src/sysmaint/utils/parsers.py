@@ -3,10 +3,10 @@
 from __future__ import annotations
 
 import re
-from typing import Any, List, Optional
+from typing import Any
 
 
-def parse_clamscan_output(output: str) -> List[dict[str, Any]]:
+def parse_clamscan_output(output: str) -> list[dict[str, Any]]:
     """
     Parse clamscan output and return a list of infected file records.
 
@@ -87,7 +87,7 @@ def parse_dism_output(output: str) -> dict[str, Any]:
     }
 
 
-def parse_sfc_log(log_text: str) -> List[str]:
+def parse_sfc_log(log_text: str) -> list[str]:
     """
     Extract repaired file references from SFC CBS log snippets.
     Looks for lines containing '[SR]'.
@@ -111,7 +111,7 @@ def parse_fsck_output(output: str) -> dict[str, Any]:
     }
 
 
-def parse_driverquery_output(output: str) -> List[dict[str, str]]:
+def parse_driverquery_output(output: str) -> list[dict[str, str]]:
     """
     Parse Windows driverquery /v CSV or tabular output.
     """

@@ -6,11 +6,11 @@ import datetime
 import logging
 import platform
 import time
-from typing import Any, Optional
+from typing import Any
 
 import psutil
 
-from ..utils.common import format_bytes, run_command
+from ..utils.common import format_bytes
 
 logger = logging.getLogger("sysmaint.sysinfo")
 
@@ -46,7 +46,7 @@ def get_cpu_info() -> dict[str, Any]:
     }
 
 
-def get_battery_info() -> Optional[dict[str, Any]]:
+def get_battery_info() -> dict[str, Any] | None:
     """
     Get battery level and charging status if system has a battery.
     """

@@ -3,17 +3,16 @@
 from __future__ import annotations
 
 import logging
-import os
 import shutil
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 from .common import run_command
 
 logger = logging.getLogger("sysmaint.linux")
 
 
-def detect_package_manager() -> Optional[str]:
+def detect_package_manager() -> str | None:
     """Detect the system package manager and return its command name."""
     for pm in ("apt-get", "apt", "dnf", "yum", "zypper", "pacman", "apk"):
         if shutil.which(pm):

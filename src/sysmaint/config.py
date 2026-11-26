@@ -6,7 +6,7 @@ import json
 import os
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any
 
 try:
     import yaml
@@ -17,7 +17,7 @@ except ImportError:  # pragma: no cover
 @dataclass
 class LoggingConfig:
     level: str = "INFO"
-    file: Optional[Path] = None
+    file: Path | None = None
 
 
 @dataclass
@@ -32,7 +32,7 @@ class DiagnosticsConfig:
 class MalwareConfig:
     use_clamav: bool = True
     use_yara: bool = True
-    yara_rules_path: Optional[Path] = None
+    yara_rules_path: Path | None = None
     use_virustotal: bool = False
     vt_api_key: str = ""
 
@@ -92,7 +92,7 @@ class SysMaintConfig:
     system: SystemConfig = field(default_factory=SystemConfig)
 
     @classmethod
-    def from_dict(cls, data: Dict[str, Any]) -> "SysMaintConfig":
+    def from_dict(cls, data: dict[str, Any]) -> SysMaintConfig:
         """Create a config instance from a dict, applying defaults."""
         if not data:
             return cls()
@@ -165,7 +165,7 @@ class SysMaintConfig:
             ),
         )
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert config to dictionary representation."""
         data = asdict(self)
         # Convert Path objects to strings
@@ -187,7 +187,7 @@ def get_default_config_path() -> Path:
     return base / "config.yaml"
 
 
-def save_config(config: SysMaintConfig, path: Optional[str | Path] = None) -> Path:
+def save_config(config: SysMaintConfig, path: str | Path | None = None) -> Path:
     """Save configuration to YAML or JSON."""
     target_path = Path(path) if path else get_default_config_path()
     target_path.parent.mkdir(parents=True, exist_ok=True)
@@ -200,7 +200,7 @@ def save_config(config: SysMaintConfig, path: Optional[str | Path] = None) -> Pa
     return target_path
 
 
-def load_config(path: Optional[str | Path] = None) -> SysMaintConfig:
+def load_config(path: str | Path | None = None) -> SysMaintConfig:
     """Load configuration from YAML or JSON file or default user location."""
     config_path = Path(path) if path else get_default_config_path()
     if not config_path.exists():
@@ -209,7 +209,7 @@ def load_config(path: Optional[str | Path] = None) -> SysMaintConfig:
     text = config_path.read_text(encoding="utf-8")
     suffix = config_path.suffix.lower()
 
-    data: Dict[str, Any] = {}
+    data: dict[str, Any] = {}
     if suffix in (".yaml", ".yml"):
         if yaml is not None:
             data = yaml.safe_load(text) or {}

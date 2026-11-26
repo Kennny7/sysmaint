@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import threading
+from collections.abc import Callable
+
 import customtkinter as ctk
-from typing import Callable, Dict, Optional
 
 from ...config import SysMaintConfig
 from ...modules.cleaner import clean_junk, scan_junk
@@ -15,7 +16,7 @@ from ..components.cards import MetricCard, SectionHeader
 class CleanerView(ctk.CTkScrollableFrame):
     """System Junk & Temporary File Cleaner view."""
 
-    def __init__(self, master, config: SysMaintConfig, log_callback: Optional[Callable] = None, **kwargs):
+    def __init__(self, master, config: SysMaintConfig, log_callback: Callable | None = None, **kwargs):
         super().__init__(master, fg_color="transparent", **kwargs)
         self.config = config
         self.log_callback = log_callback
@@ -63,7 +64,7 @@ class CleanerView(ctk.CTkScrollableFrame):
             font=ctk.CTkFont(size=14, weight="bold"),
         ).grid(row=0, column=0, columnspan=2, sticky="w", padx=16, pady=(12, 10))
 
-        self.cat_vars: Dict[str, ctk.BooleanVar] = {
+        self.cat_vars: dict[str, ctk.BooleanVar] = {
             "user_temp": ctk.BooleanVar(value=True),
             "system_temp": ctk.BooleanVar(value=True),
             "browser_cache": ctk.BooleanVar(value=True),

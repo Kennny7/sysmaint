@@ -9,9 +9,9 @@ from .config import SysMaintConfig, load_config, save_config
 
 __all__ = [
     "SysMaintConfig",
+    "__brand__",
+    "__codename__",
+    "__version__",
     "load_config",
     "save_config",
-    "__version__",
-    "__codename__",
-    "__brand__",
 ]

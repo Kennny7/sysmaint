@@ -2,16 +2,12 @@
 
 from __future__ import annotations
 
-import os
-import sys
-import tkinter as tk
 import customtkinter as ctk
-from typing import Dict, Optional
 
 from ..config import SysMaintConfig, load_config
 from ..utils.escalate import is_elevated, request_elevation
 from .components.console import ConsoleWidget
-from .theme import DARK_BG_PRIMARY, DARK_BG_SECONDARY, DARK_BORDER, init_theme
+from .theme import DARK_BG_PRIMARY, DARK_BG_SECONDARY, init_theme
 from .views.backup import BackupView
 from .views.cleaner import CleanerView
 from .views.dashboard import DashboardView
@@ -27,7 +23,7 @@ from .views.startup import StartupView
 class SysMaintApp(ctk.CTk):
     """Main SysMaint Graphical User Interface Application."""
 
-    def __init__(self, config: Optional[SysMaintConfig] = None):
+    def __init__(self, config: SysMaintConfig | None = None):
         super().__init__()
         self.config = config or load_config()
 
@@ -76,7 +72,7 @@ class SysMaintApp(ctk.CTk):
         lbl_sub.pack(anchor="w")
 
         # Nav Buttons List
-        self.nav_buttons: Dict[str, ctk.CTkButton] = {}
+        self.nav_buttons: dict[str, ctk.CTkButton] = {}
         nav_items = [
             ("dashboard", "📊  Dashboard"),
             ("cleaner", "🧹  Junk Cleaner"),
@@ -136,7 +132,7 @@ class SysMaintApp(ctk.CTk):
         self.console.grid(row=1, column=0, sticky="ew", padx=14, pady=(0, 14))
 
         # View Dictionary
-        self.views: Dict[str, ctk.CTkFrame] = {
+        self.views: dict[str, ctk.CTkFrame] = {
             "dashboard": DashboardView(self.main_container, self.config, log_callback=self.log),
             "cleaner": CleanerView(self.main_container, self.config, log_callback=self.log),
             "diagnostics": DiagnosticsView(self.main_container, self.config, log_callback=self.log),
@@ -149,7 +145,7 @@ class SysMaintApp(ctk.CTk):
             "settings": SettingsView(self.main_container, self.config, log_callback=self.log),
         }
 
-        self.current_view_id: Optional[str] = None
+        self.current_view_id: str | None = None
         self.show_view("dashboard")
         self.log("SysMaint GUI started successfully. Ready for operations.")
 
@@ -187,7 +183,7 @@ class SysMaintApp(ctk.CTk):
         request_elevation(exit_on_relaunch=True)
 
 
-def launch_gui(config: Optional[SysMaintConfig] = None):
+def launch_gui(config: SysMaintConfig | None = None):
     """Launcher helper function for GUI."""
     app = SysMaintApp(config=config)
     app.mainloop()

@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import platform
-from typing import Any, List
+from typing import Any
 
 import psutil
 
@@ -13,7 +13,7 @@ from ..utils.common import format_bytes
 logger = logging.getLogger("sysmaint.memory")
 
 
-def get_top_processes(limit: int = 10) -> List[dict[str, Any]]:
+def get_top_processes(limit: int = 10) -> list[dict[str, Any]]:
     """
     Return top processes ordered by RAM memory consumption.
     """

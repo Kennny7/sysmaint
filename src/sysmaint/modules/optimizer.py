@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import logging
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from ..config import SysMaintConfig
 from .backup import create_backup
@@ -25,7 +25,7 @@ def run_smart_scan(config: SysMaintConfig) -> dict[str, Any]:
         Comprehensive health report with a 0-100 System Health Score and actionable findings.
     """
     logger.info("Starting 1-Click Smart System Health Scan")
-    findings: List[dict[str, Any]] = []
+    findings: list[dict[str, Any]] = []
     score = 100
 
     # 1. Disk Space & Partitions
@@ -155,7 +155,7 @@ def run_auto_fix(
         Summary of executed repair operations and updated health state.
     """
     logger.info("Executing 1-Click Auto-Fix")
-    results: Dict[str, Any] = {}
+    results: dict[str, Any] = {}
 
     # 1. Automatic Restore Point Creation
     if create_restore and config.repair.auto_create_restore_point:

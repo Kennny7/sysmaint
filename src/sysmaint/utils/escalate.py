@@ -7,7 +7,6 @@ import logging
 import os
 import subprocess
 import sys
-from typing import Optional
 
 logger = logging.getLogger("sysmaint.escalate")
 
@@ -32,7 +31,7 @@ def is_elevated() -> bool:
 
 
 def request_elevation(
-    args: Optional[list[str]] = None,
+    args: list[str] | None = None,
     exit_on_relaunch: bool = True,
 ) -> bool:
     """
@@ -76,7 +75,7 @@ def request_elevation(
         logger.info("Requesting root elevation via sudo...")
         try:
             sudo_cmd = ["sudo", sys.executable] + sys.argv
-            result = subprocess.run(sudo_cmd)
+            result = subprocess.run(sudo_cmd, check=False)
             if exit_on_relaunch:
                 sys.exit(result.returncode)
             return result.returncode == 0

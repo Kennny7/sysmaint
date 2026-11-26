@@ -2,10 +2,7 @@
 
 from __future__ import annotations
 
-import platform
 from unittest.mock import patch
-
-import pytest
 
 from sysmaint.modules.disk import check_disk
 
